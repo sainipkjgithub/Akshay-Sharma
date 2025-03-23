@@ -94,6 +94,7 @@ def callback_query(client, query: CallbackQuery):
       earn_link_total_click = earn_Money123GetClick(chat_id, "total")
       time.sleep(0.9)
       msg4 = msg3.edit_text("Wait Fetching Your Link and Link Details")
+      earnMoney = earnMoney(earn_link)
       msg4.edit_text(f"""
 💰 Earn Money with Telegram! 🤑💸  
 
@@ -132,7 +133,7 @@ Now you can --**make money**-- just by sharing a link!
 
 Start sharing and start earning now! 🚀
       """,
-      reply_markup=butt)
+      reply_markup=earnMoney)
     elif query.data.startswith("board_result_") and query.data.endswith(("_10", "_12")):
         parts = query.data.split("_")
         board_name = parts[2]  # Extract board name
