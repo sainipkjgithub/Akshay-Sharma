@@ -197,11 +197,11 @@ Start sharing and start earning now! 🚀
       today_click = earn_Money123GetClick(chat_id, "today")
       time.sleep(0.6)
       today_click_msg  = refresh_today_clicks(today_click,earn_link)
-      msg1.edit_text(today_click_msg,reply_markup=earnMoney)
+      msg1.edit_text(today_click_msg,reply_markup=earnMoney12)
       earn_link_total_click = earn_Money123GetClick(chat_id, "total")
       earn_link_total_click_msg = refresh_total_clicks(earn_link_total_click,earn_link,today_click)
       time.sleep(0.9)
-      msg1.edit_text(earn_link_total_click_msg,reply_markup=earnMoney)
+      msg1.edit_text(earn_link_total_click_msg,reply_markup=earnMoney12)
     elif query.data in CALLBACK123:
       if query.data in ReplyMarkup123:
         query.message.edit_text(CALLBACK123[query.data], reply_markup=ReplyMarkup123[query.data])
