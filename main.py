@@ -22,10 +22,10 @@ def home():
     return "All in one Bot is running."
 
 # बॉट के लिए API क्रेडेंशियल्स
-API_ID = int(os.getenv("API_ID"))
-API_HASH = os.getenv("API_HASH")
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-FILE_CHANNEL_ID = os.getenv("FILE_CHANNEL_ID")
+API_ID = int(os.getenv("API_ID"))  #Required (Get it from telegram.org)
+API_HASH = os.getenv("API_HASH")   #Required (Get it from telegram.org)
+BOT_TOKEN = os.getenv("BOT_TOKEN")   #Required (Get the token from Bot Father)
+FILE_CHANNEL_ID = os.getenv("FILE_CHANNEL_ID")   #Required(Create a private channel and it id by )
 user_status = {}
 user_board_details = {}
 wb_id_dict = {
