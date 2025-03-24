@@ -86,6 +86,7 @@ def callback_query(client, query: CallbackQuery):
       msg1 = query.message.edit_text("Wait Fetching Your Link and Link Details.")
       chat_id = user_id
       earn_link = provide_earn_Money_link(chat_id)
+      earnMoney12 = earnMoney(earn_link)
       time.sleep(2)
       msg2 = msg1.edit_text("Wait Fetching Your Link and Link Details..")
       today_click = earn_Money123GetClick(chat_id, "today")
@@ -94,7 +95,6 @@ def callback_query(client, query: CallbackQuery):
       earn_link_total_click = earn_Money123GetClick(chat_id, "total")
       time.sleep(0.9)
       msg4 = msg3.edit_text("Wait Fetching Your Link and Link Details")
-      earnMoney12 = earnMoney(earn_link)
       msg4.edit_text(f"""
 💰 Earn Money with Telegram! 🤑💸  
 
@@ -187,11 +187,12 @@ Start sharing and start earning now! 🚀
           query.message.reply_text("⚠️ Nothing to CANCLE. ")
       
     elif query.data=="Refresh_earning":
+      user_id = query.from_user.id
+      chat_id = user_id
+      earn_link = f"https://urlshortner.pkjsaini42.workers.dev/{chat_id}"
       earnMoney12 = earnMoney(earn_link)
       msg1 = query.message.edit_text(refresh_clicks,reply_markup=earnMoney12)
       time.sleep(0.4)
-      chat_id = user_id
-      earn_link = f"https://urlshortner.pkjsaini42.workers.dev/{chat_id}"
       earn_link_msg = refresh_link(earn_link)
       msg1.edit_text(earn_link_msg,reply_markup=earnMoney12)
       today_click = earn_Money123GetClick(chat_id, "today")
