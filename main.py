@@ -187,11 +187,11 @@ Start sharing and start earning now! 🚀
           query.message.reply_text("⚠️ Nothing to CANCLE. ")
       
     elif query.data=="Refresh_earning":
-      msg1 = query.message.edit_text(refresh_clicks,reply_markup=earnMoney)
+      earnMoney12 = earnMoney(earn_link)
+      msg1 = query.message.edit_text(refresh_clicks,reply_markup=earnMoney12)
       time.sleep(0.4)
       chat_id = user_id
       earn_link = f"https://urlshortner.pkjsaini42.workers.dev/{chat_id}"
-      earnMoney12 = earnMoney(earn_link)
       earn_link_msg = refresh_link(earn_link)
       msg1.edit_text(earn_link_msg,reply_markup=earnMoney12)
       today_click = earn_Money123GetClick(chat_id, "today")
