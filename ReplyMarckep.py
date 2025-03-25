@@ -21,19 +21,19 @@ help_keyboard =  ReplyKeyboardMarkup(
 )
 
 wrongbutton = InlineKeyboardMarkup([
-        [InlineKeyboardButton("🌍 Our Website", url="https://myfirstwebsite.pkjsaini42.workers.dev/")],
+        [InlineKeyboardButton("🌍 Our Website", url="https://mrsingodiya.blogspot.com")],
         [InlineKeyboardButton("📞 Contact Admin", callback_data="contact_admin"),
         InlineKeyboardButton("🏠Home", callback_data="home")]
          ])
          
 contact_admin = InlineKeyboardMarkup([
-        [InlineKeyboardButton("Email",url="https://mrsingodiya.ct.ws/")],
-        [InlineKeyboardButton("Telegram", url="https://t.me/aks7240"),
+        [InlineKeyboardButton("Email",url="https://urlshortner.pkjsaini42.workers.dev/Email_Me")],
+        [InlineKeyboardButton("Telegram", user_id=6150091802),
         InlineKeyboardButton("🏠Home", callback_data="home")]
          ])
 getHelp = InlineKeyboardMarkup([
-        [InlineKeyboardButton("🌍 Our Website", url="https://myfirstwebsite.pkjsaini42.workers.dev/"),
-         InlineKeyboardButton("📞 Contact Admin", url="https://t.me/aks7240")],
+        [InlineKeyboardButton("🌍 Our Website", url="https://mrsingodiya.blogspot.com/p/contact-us.html"),
+         InlineKeyboardButton("📞 Contact Admin", url="https://t.me/aks979")],
          [InlineKeyboardButton("🏠Home", callback_data="home")]
          ])
 chat_with_assistant = ReplyKeyboardMarkup(
@@ -84,17 +84,7 @@ wrong_socialMedia = InlineKeyboardMarkup([
          InlineKeyboardButton("🏠 Home", callback_data="home")]
          ])
   
-aboutUs = InlineKeyboardMarkup([
-        [InlineKeyboardButton("🤖 Our Telegram Bots", callback_data="our_telegram_bots1"),
-         InlineKeyboardButton("🌍 Our Website", url="https://mrsingodiya.ct.ws/")],
-        [InlineKeyboardButton("📢 Follow us on Social", callback_data="follow_us"),
-         InlineKeyboardButton("💬 Chat With Assistant", callback_data="chat_with_assistant")],
-         [InlineKeyboardButton("💰 Earn Money", callback_data="earn_money")],
-        [InlineKeyboardButton("❓ Gelp", callback_data="get_help"),
-        InlineKeyboardButton("ℹ️ About", callback_data="about_us")],
-        [InlineKeyboardButton("🏠Home", callback_data="home")],
-         
-    ])
+aboutUs = InlineKeyboardMarkup([[InlineKeyboardButton("CLOSE 🔒", callback_data="home")]])
     
                      
 our_telegram_bots1 = InlineKeyboardMarkup([
@@ -133,6 +123,7 @@ explore_more = InlineKeyboardMarkup([
         InlineKeyboardButton("Download Any Video", callback_data="download_any_video")],
         [InlineKeyboardButton("AI Image Editor", callback_data="ai_image_editor"),
          InlineKeyboardButton("EDUCATION", callback_data="education")],
+         [InlineKeyboardButton("Premium Apps", callback_data="premium_apps")],
         [InlineKeyboardButton("🔙Back", callback_data="home")]
     ])
 ai_image_editor = InlineKeyboardMarkup([
