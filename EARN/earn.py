@@ -1,6 +1,8 @@
 """Jai Shree Ram """
 import requests
 import json
+import time
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message, CallbackQuery, ReplyKeyboardRemove , ForceReply
 url = "https://sainipankaj12.serv00.net/Earn/get_clicks.php?c="  # अपनी API का URL डालें
 def earn_Money123GetClick(chat_id, w_click):
   response = requests.get(f"{url}{chat_id}")
@@ -228,3 +230,14 @@ Now you can --**make money**-- just by sharing a link!
 
 Start sharing and start earning now! 🚀
 """
+
+
+def withdraw_handler(client, callback_query):
+    chat_id = callback_query.message.chat.id
+    msg=callback_query.message.edit_text("Please Wait Processing Your Withdraw Request...")
+    time.sleep(5)
+    total_clicks = earn_Money123GetClick(chat_id, "total")
+    if total_clicks * 0.5 < 600:
+        msg.edit_text("Withdrawal failed: Minimum requirement not met.",reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙Back", callback_data="Refresh_earning"),InlineKeyboardButton("🏠 Home", callback_data="home")]]))
+    else:
+        msg.edit_text("✅ Processing your withdrawal request...")
