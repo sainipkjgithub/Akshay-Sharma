@@ -52,5 +52,5 @@ Your mission is to develop scalable, efficient, and intelligent automation solut
 
         return assistant_msg
     else:
-        return f"Error: {response.status_code}, {response.text}"
+        return f"Error to connection you totai assistant"
 
