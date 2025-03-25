@@ -2,10 +2,18 @@
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from ReplyMarckep import home_keyboard, getHelp, earnMoney, aboutUs, wrongbutton, our_telegram_bots1, our_telegram_bots2, our_telegram_bots3, wrong_socialMedia, follow_us, follow_us2,fun,explore_more,college_education, school_education, education, competition_exam, contact_admin, available_boards,earn_term
 from EARN.earn import term_and_conditions
+about_text="""
+Hello, I am Akshay Sharma. I am a Technical Partner of Mr. Singodiya.  
+I am an all-in-one virtual system designed for **education, image editing, automation, earning, and AI-based solutions**.  
+My goal is to simplify complex tasks and enhance productivity through smart technology.
+I am built to handle multiple domains efficiently, including content creation, AI-powered automation, and smart integrations.  
+With advanced algorithms and intelligent processing, I help users achieve their goals faster and more effectively.  
+Innovation and optimization are at the core of my functionality, making tasks easier and more efficient.
+"""
 startmsg = "Welcome To Singodiya Tech."
 CALLBACK123 = {
   "get_help": "Hello! Need assistance? We are here to help you with any queries related to our services.\n\nYou can get support for the following:\n\n- **AI Image Generator**: How to create stunning AI-generated images?\n- **AI Assistant**: How to use AI for answering queries and automating tasks?\n- **AI Movie Provider**: How to get AI-powered movie recommendations?\n- **Movie Provider**: How to access and explore different movies and web series?\n- **UPSC Helper**: How can this tool assist in your UPSC and other government exam preparations?\n- **Earn Money Bot**: What are the different ways to earn money online?\n\nIf you have any specific questions or need further details, feel free to reach out. Our team is always ready to assist you and ensure you get the best experience possible.\n\nSimply send us your query, and we will get back to you as soon as possible!",
-  "about_us":"About Us",
+  "about_us":about_text,
   "contact_admin":"Please Select Contact Method.",
   "home":startmsg,
   "fun":"This Feature Will Come with next update. STAY TUNNED...",
