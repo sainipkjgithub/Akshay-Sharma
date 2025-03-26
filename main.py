@@ -8,16 +8,13 @@ from ReplyMarckep import download_any_video,available_boards,help_keyboard, chat
 from EARN.earn import earn_Money123GetClick,provide_earn_Money_link,term_and_conditions,refresh_total_clicks,refresh_link,refresh_today_clicks,refresh_clicks,withdraw_handler
 from aiImageEditor import ai_image_enhancer
 from FUNCTIONS.functions import sendAi_message
-from PremiumApps.premium import search_and_send_inline, search_and_send_app
-from ADMIN.admin import admin_session_av, cancle_session_query, cancle_session_msg ,adminCommand,adminCallback,process_adm_photo,process_adm_text_messages
+from PremiumApps.premium import search_and_send_inline, search_and_send_app, send_selected_version
+from ADMIN.admin import admin_session_av, cancle_session_query, cancle_session_msg ,adminCommand,adminCallback,process_adm_photo,process_adm_text_messages,add_admin_temporarily
 import requests
 import time
 from flask import Flask
-from dotenv import load_dotenv
 import os
 import threading
-
-load_dotenv()
 
 flask_app = Flask(__name__)
 
@@ -26,11 +23,7 @@ def home():
     return "All in one Bot is running."
 
 # बॉट के लिए API क्रेडेंशियल्स
-API_ID = int(os.getenv("API_ID"))
-API_HASH = os.getenv("API_HASH")
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-FILE_CHANNEL_ID = os.getenv("FILE_CHANNEL_ID")
-SEARCH_URL = "https://sainipankaj12.serv00.net/App/index.php?query="
+from script import FILE_CHANNEL_ID, API_ID, API_HASH, BOT_TOKEN, SEARCH_URL
 user_status = {}
 user_board_details = {}
 admin_app_details = {}
@@ -49,7 +42,7 @@ app = Client(
     bot_token=BOT_TOKEN
 )
 
-admins = {6150091802: "Owner", 5943119285: "Admin"}  # Example Admin Dictionary
+admins = {6500918024: "Owner", 5943119285: "Admin"}  # Example Admin Dictionary
 
 @app.on_message(filters.command("admin"))
 def admin(client, message):
@@ -57,19 +50,21 @@ def admin(client, message):
     
    # message.reply_text(f"✅ Welcome, {admins[user_id]}!")
 @app.on_message(filters.command("start"))
-def start(client, message):
-    # इनलाइन कीबोर्ड बटन बना
+async def start(client, message):
+    if message.text.startswith("/start admin_138998_"):
+         await add_admin_temporarily(client, message, admins, FILE_CHANNEL_ID)
+         return
     user_id = message.from_user.id
     if user_status.get(user_id) == "chatting_with_ai":
-      message.reply_text("⚠️Please Cancel this chat first!",reply_markup=cancel12)
+      await message.reply_text("⚠️Please Cancel this chat first!",reply_markup=cancel12)
     elif user_status.get(user_id) == "enter_roll_number":
-       message.reply_text("⚠️Please Cancel this Session first!",reply_markup=cancel12)
+       await message.reply_text("⚠️Please Cancel this Session first!",reply_markup=cancel12)
     elif user_status.get(user_id) == "search_premium_app":
-       message.reply_text("⚠️Please Cancel this Session first!",reply_markup=cancel12)
+       await message.reply_text("⚠️Please Cancel this Session first!",reply_markup=cancel12)
     elif user_status.get(user_id) and user_status[user_id].startswith("adm_"):
-      admin_session_av(client, message, user_status)
+      await admin_session_av(client, message, user_status)
     else:
-      message.reply_text(
+      await message.reply_text(
         startmsg,
         reply_markup=home_keyboard
     )
@@ -80,6 +75,7 @@ def helpcommand(client, message):
         startmsg,
         reply_markup=help_keyboard
     )
+
 @app.on_callback_query(filters.regex(r"^url<(.+)>$"))
 def handle_url_callback(client: Client, query: CallbackQuery):
     # Extract URL
@@ -94,7 +90,7 @@ def handle_withdraw(client, callback_query):
 
 @app.on_callback_query(filters.regex("^adm_"))
 def admin_callback(client, callback_query):
-  adminCallback(client, callback_query,user_status)
+  adminCallback(client, callback_query,user_status,admins)
     
 @app.on_callback_query()
 def callback_query(client, query: CallbackQuery):
@@ -247,6 +243,8 @@ Start sharing and start earning now! 🚀
         msg=query.message.reply_text(f"Please Wait...")
         query.message.delete()
         search_and_send_app(client,msg,app_name)
+    elif query.data.startswith("version_"):
+      send_selected_version(client, query)
     elif query.data in CALLBACK123:
       if query.data in ReplyMarkup123:
         query.message.edit_text(CALLBACK123[query.data], reply_markup=ReplyMarkup123[query.data])
@@ -311,7 +309,7 @@ def process_text_messages(client: Client, message: Message):
        Search_Query = user_msg
        search_and_send_inline(msg,Search_Query)
     elif user_status.get(user_id) and user_status[user_id].startswith("adm_"):
-      process_adm_text_messages(client,message,user_status,admin_app_details)
+      process_adm_text_messages(client,message,user_status,admin_app_details,admins)
     else:
         message.reply_text("⚠️ Please Select a Valid Option.")
 """
@@ -413,6 +411,15 @@ def download_image(image_url, save_path):
             file.write(response.content)
         return save_path
     return None
+def send_telegram_message(chat_id, text, bot_token):
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    payload = {
+        "chat_id": chat_id,
+        "text": text,
+        "parse_mode": "Markdown"
+    }
+    response = requests.post(url, json=payload)
+    return response.json()
     
 def run_flask():
     flask_app.run(host="0.0.0.0", port=8000)
@@ -420,10 +427,17 @@ def run_flask():
 # Function to run Pyrogram bot
 def run_bot():
     print("Bot is running...")
+    send_telegram_message(FILE_CHANNEL_ID, "BOT STARTED SUCCESSFULLY!", BOT_TOKEN)
     app.run()
+    print("\nShutting Down...")
+    
 
 # Running Flask and Pyrogram bot concurrently using threads
 if __name__ == "__main__":
     flask_thread = threading.Thread(target=run_flask)
     flask_thread.start()
     run_bot()  # This will run the bot after Flask starts
+#############
+"""
+Version 2
+"""
