@@ -184,3 +184,6 @@ back_enter_rollnumber = InlineKeyboardMarkup([
     [InlineKeyboardButton("🔙Back", callback_data="cancel"),
     InlineKeyboardButton("🏠 HOME", callback_data="home")]
 ])
+verify_premium_upload  = InlineKeyboardMarkup([
+        [InlineKeyboardButton("Upload Premium App", callback_data="adm_upload_ok"),
+        InlineKeyboardButton("Don't Upload", callback_data="adm_upload_ar")]])
