@@ -5,12 +5,12 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton,InputMedia
 import requests
 APP_DETAILS_URL = "https://sainipankaj12.serv00.net/App/get.php?app_name="
 SEARCH_URL = "https://sainipankaj12.serv00.net/App/index.php?query="
-
+import json
 
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from script import FILE_CHANNEL_ID
+from script import FILE_CHANNEL_ID,user_status,BOT_TOKEN
 
 
 
@@ -80,13 +80,14 @@ def search_and_send_app(client, msg, app_name):
         [InlineKeyboardButton(f"{file['version']}", callback_data=f"version_{app_name}_{file['version']}")]
         for file in file_versions
     ]
+    print(buttons)
 
     msg.edit(
         f"📲 **{app_name}**\n\n🔽 Select a version to download:",
         reply_markup=InlineKeyboardMarkup(buttons)
     )
 
-def send_selected_version(client, callback_query: CallbackQuery):
+def send_selected_version(client, callback_query: CallbackQuery, welddd):
     data = callback_query.data.split("_")
     if len(data) < 3:
         callback_query.answer("Invalid selection!", show_alert=True)
@@ -113,27 +114,60 @@ def send_selected_version(client, callback_query: CallbackQuery):
 
     file_id = version_data.get("file_id")
     total_downloads = version_data.get("total_downloads")
+    app_details = version_data.get("app_details")
 
     if not file_id:
         callback_query.message.edit("⚠️ File not found.")
         return
 
-    details_text = f"""📲 **{app_name}**  
-🔹 **Version:** {version}  
-📥 **Total Downloads:** {total_downloads}"""
+    details_text = f"""📲 <b>{app_name}</b>  
+🔹 <b>Version:</b> {version} 
+📥 <b>Total Downloads:</b> {total_downloads}
+⚜️ <b>App Details : </b> {app_details}
+"""
 
     user_id = callback_query.message.chat.id
     try:
-        client.send_document(
-            chat_id=user_id,
-            document=file_id,
-            caption=details_text,
-            protect_content=True
-        )
-        callback_query.answer("📥 Download Started!", show_alert=True)
+        welddd.delete()
+        callback_query.answer("📥 Download Started!")
+        del user_status[user_id]
+        respo = send_document(BOT_TOKEN, user_id,app_name, file_id, details_text,True,"HTML")
+        if respo == "OK":
+          return
+        else:
+          callback_query.message.reply_text("⚠️ Requested app not found. Please contact the admin.")
+          return
     except Exception as e:
         callback_query.message.reply_text("⚠️ Requested app not found. Please contact the admin.")
         client.send_message(
             FILE_CHANNEL_ID,
             f" **USER ID**: {user_id} \n\n⚠️ **Error:** {str(e)}"
         )
+
+
+def send_document(bot_token, chat_id, app_name, file_id, caption="", protect_content=True, parse_mode="HTML"):
+    url = f"https://api.telegram.org/bot{bot_token}/sendDocument"
+    
+    keyboard = {
+        "inline_keyboard": [
+            [{"text": "🔍Search Again", "callback_data": "premium_apps"}],
+            [{"text": "🔙Back", "callback_data": f"pre_{app_name}"},
+            {"text": "🏠 Home", "callback_data": "home"}]
+        ]
+    }
+    
+    payload = {
+        "chat_id": chat_id,
+        "document": file_id,
+        "caption": caption,
+        "protect_content": protect_content,
+        "parse_mode": parse_mode,
+        "reply_markup": json.dumps(keyboard)  
+    }
+    
+    response = requests.post(url, data=payload)
+    
+    if response.status_code == 200:
+        return "OK"
+    else:
+        return "ER"
