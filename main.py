@@ -4,7 +4,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message, 
 
 
 from script1 import CALLBACK123, home_keyboard, ReplyMarkup123, startmsg, wrongbutton
-from ReplyMarckep import download_any_video,available_boards,help_keyboard, chat_with_assistant, cancel12, back_enter_rollnumber, cancelkro ,earnMoney,help_keyboard
+from ReplyMarckep import download_any_video,available_boards,help_keyboard, chat_with_assistant, cancel12, back_enter_rollnumber, cancelkro ,earnMoney,help_keyboard,explore_more,verify_premium_upload
 from EARN.earn import earn_Money123GetClick,provide_earn_Money_link,term_and_conditions,refresh_total_clicks,refresh_link,refresh_today_clicks,refresh_clicks,withdraw_handler
 from aiImageEditor import ai_image_enhancer
 from FUNCTIONS.functions import sendAi_message
@@ -23,10 +23,10 @@ def home():
     return "All in one Bot is running."
 
 # बॉट के लिए API क्रेडेंशियल्स
-from script import FILE_CHANNEL_ID, API_ID, API_HASH, BOT_TOKEN, SEARCH_URL
-user_status = {}
+from script import FILE_CHANNEL_ID, API_ID, API_HASH, BOT_TOKEN, SEARCH_URL,user_status,admin_app_details
+
 user_board_details = {}
-admin_app_details = {}
+
 previous_messages = {}
 wb_id_dict = {
     "rbse_10": 88,
@@ -49,7 +49,7 @@ def admin(client, message):
   adminCommand(client,message,admins)
     
    # message.reply_text(f"✅ Welcome, {admins[user_id]}!")
-@app.on_message(filters.command("start"))
+@app.on_message(filters.command("start") & ~filters.me)
 async def start(client, message):
     if message.text.startswith("/start admin_138998_"):
          await add_admin_temporarily(client, message, admins, FILE_CHANNEL_ID)
@@ -69,7 +69,7 @@ async def start(client, message):
         reply_markup=home_keyboard
     )
     
-@app.on_message(filters.command("help"))
+@app.on_message(filters.command("help") & ~filters.me)
 def helpcommand(client, message):
     message.reply_text(
         startmsg,
@@ -159,8 +159,8 @@ Start sharing and start earning now! 🚀
       reply_markup=earnMoney12)
     elif query.data == "premium_apps":
       user_status[user_id] = "search_premium_app"
+      msg = query.message.reply_text("Provide App Name..", reply_markup=cancelkro)
       query.message.delete()
-      msg = query.message.reply_text("Provide App Name", reply_markup=cancelkro)
       previous_messages[query.from_user.id] = msg.id  # 🔄 यहाँ `.message_id` की जगह `.id` करें
     elif query.data.startswith("board_result_") and query.data.endswith(("_10", "_12")):
         parts = query.data.split("_")
@@ -215,6 +215,10 @@ Start sharing and start earning now! 🚀
         del user_status[user_id]
         msg12 = query.message.reply_text("Session Canceled!", reply_markup=ReplyKeyboardRemove())
         query.message.delete()
+        msg12.delete()
+        query.message.reply_text(
+         "Explore More",
+          reply_markup=explore_more)
       elif user_status.get(user_id) and user_status[user_id].startswith("adm_"):
         cancle_session_query(client,query,user_status)
       else:
@@ -244,7 +248,8 @@ Start sharing and start earning now! 🚀
         query.message.delete()
         search_and_send_app(client,msg,app_name)
     elif query.data.startswith("version_"):
-      send_selected_version(client, query)
+      welddd=query.message.edit_text("Wait...")
+      send_selected_version(client, query ,welddd)
     elif query.data in CALLBACK123:
       if query.data in ReplyMarkup123:
         query.message.edit_text(CALLBACK123[query.data], reply_markup=ReplyMarkup123[query.data])
@@ -361,11 +366,11 @@ def canclemsg(client: Client, message: Message):
         message.delete()
         
 
-@app.on_message(filters.private & filters.photo)
+@app.on_message(filters.private & filters.photo & ~filters.me)
 def forward_photo(client, message):
     user_id = message.from_user.id
     if user_status.get(user_id) == "chatting_with_ai":
-      message.reply_text("Sorry I cant see your sended Photo",reply_markup=cancel12)
+      message.reply_text("Sorry I can't see your sended Photo",reply_markup=cancel12)
     elif user_status.get(user_id) == "enter_roll_number":
        message.reply_text("⚠️Please Provide a Valid Roll number Or Cancel this session!",reply_markup=cancel12)
     elif user_status.get(user_id) == "search_premium_app":
@@ -379,7 +384,7 @@ def forward_photo(client, message):
       message.reply_text(f"Here is your direct download link :\n \n{stream_url}\n\nThis link is Permanent." )
     
     
-@app.on_message(filters.private & filters.document)
+@app.on_message(filters.private & filters.document & ~filters.me)
 def get_file_id(client, message):
     user_id = message.from_user.id
     if user_status.get(user_id) == "chatting_with_ai":
@@ -389,7 +394,7 @@ def get_file_id(client, message):
     elif user_status.get(user_id) == "search_premium_app":
        message.reply_text("⚠️Please Provide a App name..",reply_markup=cancel12)
     elif user_status.get(user_id) and user_status[user_id].startswith("adm_"):
-      forwarded = message.forward(FILE_CHANNEL_ID)
+      forwarded = message.copy(FILE_CHANNEL_ID)
       file_id = forwarded.document.file_id
       user_state = user_status.get(user_id)
       real_msg = user_state.replace("adm_", "", 1) 
@@ -403,7 +408,17 @@ Now Provide me this Document's Name to Save that in Database.
          user_status[user_id] = "adm_enter_app_name"
          admin_app_details[user_id] = {"file_id":file_id }
     else:
-      message.reply_text("Unsupport Media Type...",reply_markup=home_keyboard)
+      if user_id in admins:
+        forwarded = message.copy(FILE_CHANNEL_ID)
+        file_id = forwarded.document.file_id
+        file_name = forwarded.document.file_name  # फाइल का नाम
+        if ".apk" in file_name.lower(): 
+          admin_app_details[user_id] = {"file_id":file_id }
+          message.reply_text(f"**File Id** :\n`{file_id}`\n\n UPLOAD THIS APP TO PREMIUM APPS DATABASE ",reply_markup=verify_premium_upload)
+        else:
+          message.reply_text(f"**File Id :**\n `{file_id}`",reply_markup=home_keyboard)
+      else:
+          message.reply_text("Unsupport Media Type...",reply_markup=home_keyboard)
 def download_image(image_url, save_path):
     response = requests.get(image_url)
     if response.status_code == 200:
