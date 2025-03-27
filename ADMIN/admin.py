@@ -13,7 +13,7 @@ import asyncio
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from script import FILE_CHANNEL_ID
+from script import FILE_CHANNEL_ID,admin_app_details
 
 cancel12 = InlineKeyboardMarkup([
         [InlineKeyboardButton("🚫Cancel", callback_data="cancel")]])
@@ -58,6 +58,13 @@ def adminCallback(client, callback_query,user_status,admins):
         user_status[user_id] = "adm_add_admin"
       else:
         callback_query.message.reply_text(f"Hey {first_name}, You Can't add anyone to admin because you are are not a Parmant admin")
+    elif real_msg =="upload_ok":
+      callback_query.message.edit_text("Hello Provide Me app name",reply_markup=cancelkro)
+      user_status[user_id] = "adm_enter_app_name"
+    elif real_msg =="upload_ar":
+      callback_query.message.edit_text("Not Sending...",reply_markup=admin_keyboard)
+      del admin_app_details[user_id]
+      
 async def admin_session_av(client, message, user_status):
     user_id = message.from_user.id
     user_state = user_status.get(user_id)
@@ -108,6 +115,7 @@ def cancle_session_msg(client,message,user_status):
       msg12.delete()
   elif real_msg.startswith("enter_app"):
      del admin_app_details[user_id]
+     msg12.edit("Hello admin",reply_markup=admin_keyboard)
   else:
       del user_status[user_id]
       msg12 = message.reply_text("Session Canceled!", reply_markup=ReplyKeyboardRemove())
@@ -132,27 +140,25 @@ def process_adm_text_messages(client,message,user_status,admin_app_details,admin
     elif real_msg == "enter_app_provider":
       app_provider = message.text
       admin_app_details[user_id]["app_provider"] = app_provider
-      message.reply_text("About App...")
+      message.reply_text("About App..")
       user_status[user_id] = "adm_enter_app_details"
     elif real_msg == "enter_app_details":
       app_details = message.text
       admin_app_details[user_id]["app_details"] = app_details
-      message.reply_text("Send me a App logo..")
-      user_status[user_id] = "adm_enter_app_logo"
+      message.reply_text("App Category..")
+      user_status[user_id] = "adm_enter_app_category"
     elif real_msg == "enter_app_category":
       app_category = message.text
       app_details = admin_app_details[user_id]["app_details"]
       file_id = admin_app_details[user_id]["file_id"]
       app_name = admin_app_details[user_id]["app_name"]
       app_version = admin_app_details[user_id]["app_version"]
-      app_logo = admin_app_details[user_id]["app_logo"]
+     # app_logo = admin_app_details[user_id]["app_logo"]
       app_provider = admin_app_details[user_id]["app_provider"]
       data = { "App Name": app_name,
       "File ID": file_id,
       "Version": app_version,
      "App Details": app_details,
-     "Logo": app_logo,
-     "Provider": app_provider,
      "Category": app_category
       }
     
@@ -163,15 +169,18 @@ def process_adm_text_messages(client,message,user_status,admin_app_details,admin
       print(response.status_code)
       print(response.text)
       del user_status[user_id]
-
       message.reply_text(f"""
 APP DETAILS 
 **APP NAME** : {app_name}
 **APP VERSION** : {app_version}
-**APP LOGO** : {app_logo}
 **APP CATEGORY** : {app_category}
 **ABOUT APP** : {app_details}
       """,reply_markup=ReplyKeyboardRemove())
+      message.reply_text("Saved SUCCESSFULLY",
+      reply_markup=InlineKeyboardMarkup([
+        [InlineKeyboardButton("Upload more", callback_data="adm_upload_premium_app")]
+        ])
+      )
     elif real_msg == "block_user_id":
       block_user = message.text
       message.reply_text("Thanks For Provide me This Id I am Blocking..")
@@ -270,7 +279,7 @@ def add_new_admin(client,message,admins,user_status):
 **User ID :** {admin_id}
 **Added By :** [{first_name}](tg://user?id={user_id})
   """)
-         client.send_message(admin_id,"**Now You are an Admin. Of this Bot**\n\n--Please use-- /admin --command to use admin features!--")
+         client.send_message(admin_id,"**Now You are an Admin. Of this Bot**\n\n--Please use-- /admin --command to use admin features!--",reply_markup=admin_keyboard)
          message.reply_text(f"""
 --User Added As an admin successfully:--
 
