@@ -176,7 +176,7 @@ APP DETAILS
 **APP CATEGORY** : {app_category}
 **ABOUT APP** : {app_details}
       """,reply_markup=ReplyKeyboardRemove())
-      message.reply_text("Saved SUCCESSFULLY",
+      message.reply_text(f"Saved SUCCESSFULLY \n Server Response : {response.text}",
       reply_markup=InlineKeyboardMarkup([
         [InlineKeyboardButton("Upload more", callback_data="adm_upload_premium_app")]
         ])
