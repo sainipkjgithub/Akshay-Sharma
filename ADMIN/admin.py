@@ -57,7 +57,7 @@ def adminCallback(client, callback_query,user_status,admins):
         callback_query.message.reply_text(f"Hey {first_name}, Please Send me user id to add admin!",reply_markup=cancelkro)
         user_status[user_id] = "adm_add_admin"
       else:
-        callback_query.message.reply_text(f"Hey {first_name}, You Can't add anyone to admin because you are are not a Parmant admin")
+        callback_query.message.edit_text(f"Hey {first_name}, You Can't add anyone to admin because you are are not a Parmant admin")
     elif real_msg =="upload_ok":
       callback_query.message.edit_text("Hello Provide Me app name",reply_markup=cancelkro)
       user_status[user_id] = "adm_enter_app_name"
@@ -158,22 +158,33 @@ def process_adm_text_messages(client,message,user_status,admin_app_details,admin
       data = { "App Name": app_name,
       "File ID": file_id,
       "Version": app_version,
-     "App Details": app_details,
-     "Category": app_category
+      "App Details": app_details,
+      "Provider": app_provider,
+      "Category": app_category
       }
     
       
 
       url = "https://sainipankaj12.serv00.net/App/post.php"
       response = requests.post(url, headers={"Content-Type": "application/json"}, data=json.dumps(data))
-      print(response.status_code)
-      print(response.text)
+      if response.status_code != 200:
+          return
+      try:
+          response_json = response.json()  # JSON response को dictionary में बदलें
+          if response_json.get("status") == "error":
+            message.reply_text(f"Error :\n Server Response : {response_json.get('message')}")
+            return 
+          
+      except json.JSONDecodeError:
+          message.reply_text(f"Error: Invalid JSON response\n Server Response : {response.text}")
+          return
       del user_status[user_id]
       message.reply_text(f"""
 APP DETAILS 
 **APP NAME** : {app_name}
 **APP VERSION** : {app_version}
 **APP CATEGORY** : {app_category}
+** App Provider** : {app_provider}
 **ABOUT APP** : {app_details}
       """,reply_markup=ReplyKeyboardRemove())
       message.reply_text(f"Saved SUCCESSFULLY \n Server Response : {response.text}",
