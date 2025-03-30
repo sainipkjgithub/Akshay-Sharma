@@ -2,28 +2,35 @@
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message, CallbackQuery, ReplyKeyboardRemove , ForceReply
 
-
 from script1 import CALLBACK123, home_keyboard, ReplyMarkup123, startmsg, wrongbutton
-from ReplyMarckep import download_any_video,available_boards,help_keyboard, chat_with_assistant, cancel12, back_enter_rollnumber, cancelkro ,earnMoney,help_keyboard,explore_more,verify_premium_upload
+from ReplyMarckep import download_any_video,available_boards, chat_with_assistant, cancel12, back_enter_rollnumber, cancelkro ,earnMoney,help_keyboard,explore_more,verify_premium_upload,admin_home_keyboard
 from EARN.earn import earn_Money123GetClick,provide_earn_Money_link,term_and_conditions,refresh_total_clicks,refresh_link,refresh_today_clicks,refresh_clicks,withdraw_handler
 from aiImageEditor import ai_image_enhancer
-from FUNCTIONS.functions import sendAi_message
-from PremiumApps.premium import search_and_send_inline, search_and_send_app, send_selected_version
-from ADMIN.admin import admin_session_av, cancle_session_query, cancle_session_msg ,adminCommand,adminCallback,process_adm_photo,process_adm_text_messages,add_admin_temporarily
+from FUNCTIONS.functions import sendAi_message,get_quote
+from PremiumApps.premium import search_and_send_inline, search_and_send_app ,premiumcall12345,premium_app_send
+from ADMIN.admin import admin_session_av, cancle_session_query, cancle_session_msg ,adminCommand,adminCallback,process_adm_photo,process_adm_text_messages,add_admin_temporarily,send_data
 import requests
 import time
-from flask import Flask
+from flask import Flask, request, jsonify
 import os
+import asyncio
 import threading
-
+import json
 flask_app = Flask(__name__)
-
+#InlineKeyboardMarkup([[InlineKeyboardButton("⚜Home", callback_data="home")]])
 @flask_app.route('/')
 def home():
     return "All in one Bot is running."
+#########
 
+
+
+UPLOAD_URL = "https://sainipankaj12.serv00.net/App/Pre/index.php"
+API_URL = "https://sainipankaj12.serv00.net/App/Pre/index.php"
+
+##############₹%%%%^₹%^₹%^
 # बॉट के लिए API क्रेडेंशियल्स
-from script import FILE_CHANNEL_ID, API_ID, API_HASH, BOT_TOKEN, SEARCH_URL,user_status,admin_app_details
+from script import FILE_CHANNEL_ID, API_ID, API_HASH, BOT_TOKEN, SEARCH_URL,user_status,admin_app_details, temp_data,admins
 
 user_board_details = {}
 
@@ -42,7 +49,7 @@ app = Client(
     bot_token=BOT_TOKEN
 )
 
-admins = {6500918024: "Owner", 5943119285: "Admin"}  # Example Admin Dictionary
+
 
 @app.on_message(filters.command("admin"))
 def admin(client, message):
@@ -55,6 +62,7 @@ async def start(client, message):
          await add_admin_temporarily(client, message, admins, FILE_CHANNEL_ID)
          return
     user_id = message.from_user.id
+    user_name = message.from_user.first_name
     if user_status.get(user_id) == "chatting_with_ai":
       await message.reply_text("⚠️Please Cancel this chat first!",reply_markup=cancel12)
     elif user_status.get(user_id) == "enter_roll_number":
@@ -63,6 +71,8 @@ async def start(client, message):
        await message.reply_text("⚠️Please Cancel this Session first!",reply_markup=cancel12)
     elif user_status.get(user_id) and user_status[user_id].startswith("adm_"):
       await admin_session_av(client, message, user_status)
+    elif user_id in admins:
+      await message.reply_text(f"Hey Admin [{user_name}](tg://user?id={user_id}), How are you", reply_markup=admin_home_keyboard)
     else:
       await message.reply_text(
         startmsg,
@@ -83,7 +93,22 @@ def handle_url_callback(client: Client, query: CallbackQuery):
     print(url)
     query.answer(url=url)
 #from pyrogram import filters
-
+@app.on_callback_query(filters.regex("^adm_upload_ok"))
+async def admin_callback456(client, callback_query):
+    user_id = callback_query.from_user.id
+    first_name =callback_query.from_user.first_name
+    if user_id not in admins:
+        return callback_query.answer("⛔ आपको इस एक्शन की अनुमति नहीं है!", show_alert=True)
+    callback_data = callback_query.data  # e.g., "adm_upload_premium_app"
+    real_msg = callback_data.replace("adm_", "", 1)  # Removes "adm_" prefix
+    #callback_query.message.reply_text(f"🔹 Real Message: {real_msg}")
+    if real_msg =="upload_ok":
+      await callback_query.message.edit_text("Please Wait...")
+      print(admin_app_details)
+      file_id = admin_app_details[user_id]['file_id']
+      file_name =  admin_app_details[user_id]['file_name']
+      await send_data(file_id, file_name)
+      await callback_query.message.edit_text("Uploded successfully Thanks For Upload This file.😊😊😊😊",reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙Back", callback_data="admin_home")],[InlineKeyboardButton("⚜Home", callback_data="home")]]))
 @app.on_callback_query(filters.regex("^withdrawal$"))
 def handle_withdraw(client, callback_query):
     withdraw_handler(client, callback_query)  # ✅ Call किया
@@ -91,7 +116,16 @@ def handle_withdraw(client, callback_query):
 @app.on_callback_query(filters.regex("^adm_"))
 def admin_callback(client, callback_query):
   adminCallback(client, callback_query,user_status,admins)
+
+@app.on_callback_query(filters.regex("^pre_"))
+async def premiumcall(client, query: CallbackQuery):
+  await premium_app_send(client, query)
     
+
+@app.on_callback_query(filters.regex("^page_"))
+async def premiumcall12(client, query: CallbackQuery):
+  await premiumcall12345(client, query)
+
 @app.on_callback_query()
 def callback_query(client, query: CallbackQuery):
     user_id = query.from_user.id  # Get user ID
@@ -162,6 +196,15 @@ Start sharing and start earning now! 🚀
       msg = query.message.reply_text("Provide App Name..", reply_markup=cancelkro)
       query.message.delete()
       previous_messages[query.from_user.id] = msg.id  # 🔄 यहाँ `.message_id` की जगह `.id` करें
+    elif query.data == "motivational_quota":
+      query.message.edit_text("Getting Quota...")
+      time.sleep(5)
+      query.message.edit_text(get_quote(),reply_markup=InlineKeyboardMarkup([
+          [InlineKeyboardButton("♻️Refresh", callback_data="motivational_quota")],
+          [InlineKeyboardButton("🔙Back", callback_data="adm_upload_premium_app"),
+          InlineKeyboardButton("⚜Home", callback_data="home")]
+          ])
+          )
     elif query.data.startswith("board_result_") and query.data.endswith(("_10", "_12")):
         parts = query.data.split("_")
         board_name = parts[2]  # Extract board name
@@ -242,14 +285,15 @@ Start sharing and start earning now! 🚀
       earn_link_total_click_msg = refresh_total_clicks(earn_link_total_click,earn_link,today_click)
       time.sleep(0.9)
       msg1.edit_text(earn_link_total_click_msg,reply_markup=earnMoney12)
-    elif query.data.startswith("pre_"):
-        app_name = query.data[4:]  # "pre_" के बाद का टेक्स्ट निकालें
-        msg=query.message.reply_text(f"Please Wait...")
-        query.message.delete()
-        search_and_send_app(client,msg,app_name)
-    elif query.data.startswith("version_"):
-      welddd=query.message.edit_text("Wait...")
-      send_selected_version(client, query ,welddd)
+    elif query.data =="home":
+      user_id = query.from_user.id
+      user_name = query.from_user.first_name
+      if user_id in admins:
+        query.message.reply_text(f"Hey Admin [{user_name}](tg://user?id={user_id}), How are you", reply_markup=admin_home_keyboard)
+      else:
+        query.message.reply_text(f"Hey [{user_name}](tg://user?id={user_id}) , Welcome You to SingodiyaTech", reply_markup=home_keyboard)
+      query.message.delete()
+      
     elif query.data in CALLBACK123:
       if query.data in ReplyMarkup123:
         query.message.edit_text(CALLBACK123[query.data], reply_markup=ReplyMarkup123[query.data])
@@ -264,13 +308,13 @@ Start sharing and start earning now! 🚀
     ~filters.command("start") &  # ✅ सभी कमांड्स ("/something") को इग्नोर करे
     ~filters.regex(r"^🚫CANCEL$")
 )
-def process_text_messages(client: Client, message: Message):
+async def process_text_messages(client: Client, message: Message):
     user_id = message.from_user.id
     user_msg = message.text
     user_name = message.from_user.first_name
     if user_status.get(user_id) == "chatting_with_ai":
       answer = sendAi_message(user_id,user_name, user_msg)
-      message.reply_text(answer)
+      await message.reply_text(answer)
     # WB ID Dictionary for different boards and classes
 
     elif user_status.get(user_id) == "enter_roll_number":
@@ -288,7 +332,7 @@ def process_text_messages(client: Client, message: Message):
                 
                 result_link = f"https://sainipankaj12.serv00.net/Result/boardresult.php?tag=raj_10_result&roll_no={roll_no}&year=2024&wb_id={wb_id}&source=3&download"
                 
-                a=message.reply_text(f"Please Wait...  {result_link}")
+                a = await message.reply_text(f"Please Wait...  {result_link}")
                 # Send document to user
                 result_link_view = result_link.replace("download", "see")
                 url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument"
@@ -303,20 +347,20 @@ def process_text_messages(client: Client, message: Message):
                 requests.post(url, data=data)
                 a.delete()
             else:
-                message.reply_text("Invalid roll number! Please enter a Valid Roll Number." ,reply_markup=back_enter_rollnumber)
+                await message.reply_text("Invalid roll number! Please enter a Valid Roll Number." ,reply_markup=back_enter_rollnumber)
         else:
-           message.reply_text("Please select your board and class first.",reply_markup=available_boards)
+           await message.reply_text("Please select your board and class first.",reply_markup=available_boards)
     elif user_status.get(user_id) == "search_premium_app":
-       client.delete_messages(chat_id=message.chat.id, message_ids=previous_messages[user_id])
-       msg=message.reply_text("Please Wait...",reply_markup=ReplyKeyboardRemove())
-       msg.delete()
-       msg =message.reply_text("Searching app...")
+       await client.delete_messages(chat_id=message.chat.id, message_ids=previous_messages[user_id])
+       msg= await message.reply_text("Please Wait...",reply_markup=ReplyKeyboardRemove())
+       await msg.delete()
+       msg = await message.reply_text("Searching app...")
        Search_Query = user_msg
-       search_and_send_inline(msg,Search_Query)
+       await search_and_send_inline(msg,Search_Query)
     elif user_status.get(user_id) and user_status[user_id].startswith("adm_"):
-      process_adm_text_messages(client,message,user_status,admin_app_details,admins)
+      await process_adm_text_messages(client,message,user_status,admin_app_details,admins)
     else:
-        message.reply_text("⚠️ Please Select a Valid Option.")
+        await message.reply_text("⚠️ Please Select a Valid Option.",reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("⚜Home", callback_data="home")]]))
 """
 ON CANCEL msg12
 """
@@ -385,40 +429,41 @@ def forward_photo(client, message):
     
     
 @app.on_message(filters.private & filters.document & ~filters.me)
-def get_file_id(client, message):
+async def get_file_id(client, message):
     user_id = message.from_user.id
     if user_status.get(user_id) == "chatting_with_ai":
-      message.reply_text("Sorry I cant see your sended Document",reply_markup=cancel12)
+      await message.reply_text("Sorry I cant see your sended Document",reply_markup=cancel12)
     elif user_status.get(user_id) == "enter_roll_number":
-       message.reply_text("⚠️Please Provide a Valid Roll number Or Cancel this session!",reply_markup=cancel12)
+       await message.reply_text("⚠️Please Provide a Valid Roll number Or Cancel this session!",reply_markup=cancel12)
     elif user_status.get(user_id) == "search_premium_app":
-       message.reply_text("⚠️Please Provide a App name..",reply_markup=cancel12)
+       await message.reply_text("⚠️Please Provide a App name I Will Find Out Premium app for you...",reply_markup=cancel12)
     elif user_status.get(user_id) and user_status[user_id].startswith("adm_"):
-      forwarded = message.copy(FILE_CHANNEL_ID)
+      forwarded = await message.copy(FILE_CHANNEL_ID)
       file_id = forwarded.document.file_id
+      file_name = forwarded.document.file_name
       user_state = user_status.get(user_id)
       real_msg = user_state.replace("adm_", "", 1) 
       if real_msg =="upload_premium_app":
-         message.reply_text(f"""
-Ok My god I have Sent This Document to Channel.
+         await message.reply_text(f"""
+Saved Successfully in database : 
+**FILE NAME :** `{file_name}`
 **FILE ID : ** `{file_id}` .
-Now Provide me this Document's Name to Save that in Database.
-      """,reply_markup=cancel12)
+      """,reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙Back", callback_data="adm_upload_premium_app")]]))
+         await send_data(file_id, file_name)
          del user_status[user_id]
-         user_status[user_id] = "adm_enter_app_name"
-         admin_app_details[user_id] = {"file_id":file_id }
     else:
       if user_id in admins:
-        forwarded = message.copy(FILE_CHANNEL_ID)
+        forwarded = await message.copy(FILE_CHANNEL_ID)
         file_id = forwarded.document.file_id
         file_name = forwarded.document.file_name  # फाइल का नाम
         if ".apk" in file_name.lower(): 
           admin_app_details[user_id] = {"file_id":file_id }
-          message.reply_text(f"**File Id** :\n`{file_id}`\n\n UPLOAD THIS APP TO PREMIUM APPS DATABASE ",reply_markup=verify_premium_upload)
+          admin_app_details[user_id]['file_name'] = file_name
+          await message.reply_text(f"**File Name :**\n `{file_name}`\n\n**File Id** :\n`{file_id}`\n\n UPLOAD THIS APP TO PREMIUM APPS DATABASE ",reply_markup=verify_premium_upload)
         else:
-          message.reply_text(f"**File Id :**\n `{file_id}`",reply_markup=home_keyboard)
+          await message.reply_text(f"**File Name :**\n `{file_name}`\n\n**File Id :**\n `{file_id}`",reply_markup=home_keyboard)
       else:
-          message.reply_text("Unsupport Media Type...",reply_markup=home_keyboard)
+          await message.reply_text("Unsupport Media Type...",reply_markup=home_keyboard)
 def download_image(image_url, save_path):
     response = requests.get(image_url)
     if response.status_code == 200:
@@ -435,7 +480,10 @@ def send_telegram_message(chat_id, text, bot_token):
     }
     response = requests.post(url, json=payload)
     return response.json()
-    
+
+
+
+
 def run_flask():
     flask_app.run(host="0.0.0.0", port=8000)
 
