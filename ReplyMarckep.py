@@ -1,4 +1,5 @@
 """Jai Shree Ram"""
+#Version 2.3.4
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
 
@@ -12,6 +13,25 @@ home_keyboard = InlineKeyboardMarkup([
         [InlineKeyboardButton("❓ Get Help", callback_data="get_help"),
         InlineKeyboardButton("ℹ️ About Us", callback_data="about_us")]
          
+    ])
+admin_home_keyboard = InlineKeyboardMarkup([
+        [InlineKeyboardButton("🤖 Our Telegram Bots", callback_data="our_telegram_bots1"),
+         InlineKeyboardButton("🌍 Our Website", url="https://mrsingodiya.ct.ws/")],
+        [InlineKeyboardButton("📢 Follow us on Social", callback_data="follow_us"),
+         InlineKeyboardButton("💬 Chat With Assistant", callback_data="chat_with_assistant")],
+         [InlineKeyboardButton("💰 Earn Money", callback_data="earn_money")],
+         [InlineKeyboardButton("Explore More", callback_data="explore_more")],
+        [InlineKeyboardButton("❓ Get Help", callback_data="get_help"),
+        InlineKeyboardButton("ℹ️ About Us", callback_data="about_us")],
+        [InlineKeyboardButton("Admin", callback_data="admin_home")]
+         
+    ])
+admin_home = InlineKeyboardMarkup([
+        [InlineKeyboardButton("Upload Premium App", callback_data="adm_upload_premium_app")],
+        [InlineKeyboardButton("BLOCK USER", callback_data="adm_block_user"),
+        InlineKeyboardButton("Add Admin", callback_data="adm_add_admin")],
+        [InlineKeyboardButton("ADMINS", callback_data="adm_admins")],
+        [InlineKeyboardButton("⚜️Home", callback_data="home")]
     ])
 cancel12 = InlineKeyboardMarkup([
         [InlineKeyboardButton("🚫Cancel", callback_data="cancel")]])
@@ -123,6 +143,7 @@ explore_more = InlineKeyboardMarkup([
         InlineKeyboardButton("Download Any Video", callback_data="download_any_video")],
         [InlineKeyboardButton("AI Image Editor", callback_data="ai_image_editor"),
          InlineKeyboardButton("EDUCATION", callback_data="education")],
+         [InlineKeyboardButton("Motivational Quota", callback_data="motivational_quota")],
          [InlineKeyboardButton("Premium Apps", callback_data="premium_apps")],
         [InlineKeyboardButton("🔙Back", callback_data="home")]
     ])
