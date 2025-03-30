@@ -1,157 +1,106 @@
 """
 JAY SHREE RAM
 """
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton,InputMediaPhoto
+"""
+FUNCTIONS Here 
+#search_and_send_inline,search_and_send_app,send_document
+"""
+##Imports
 import requests
-APP_DETAILS_URL = "https://sainipankaj12.serv00.net/App/get.php?app_name="
-SEARCH_URL = "https://sainipankaj12.serv00.net/App/index.php?query="
 import json
-
 import sys
 import os
+##Imports#From Pyrogran 
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton,InputMediaPhoto, CallbackQuery
+
+#From Previous Folders
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from script import FILE_CHANNEL_ID,user_status,BOT_TOKEN
+from script import FILE_CHANNEL_ID,user_status,BOT_TOKEN, temp_data,SEARCH_URL,user_status
 
-
-
-def search_and_send_inline(msg, search_query):
+saveii = {}
+#Main Functions Started
+async def search_and_send_inline(msg, search_query, page=1):
     response = requests.get(SEARCH_URL + search_query)
+    user_id = msg.chat.id
+    if user_id not in saveii:
+        saveii[user_id] = {}
     if response.status_code != 200:
-        msg.edit("Error Searching App")
+        await msg.edit("Error Searching App")
         return
-    
+    saveii[user_id]['page'] = page
+    saveii[user_id]['search_query'] = search_query
     apps = response.json()
-    
     if not apps:
-        msg.edit("No App found")
+        await msg.edit("No App found")
         return
 
-    # 2 कॉलम में बटन दिखाने के लिए लिस्ट को विभाजित करें
+    results_per_page = 10
+    total_pages = (len(apps) + results_per_page - 1) // results_per_page  # कुल पेज
+    
+    # पेज इंडेक्स सेट करें
+    start_idx = (page - 1) * results_per_page
+    end_idx = start_idx + results_per_page
+    apps = apps[start_idx:end_idx]  # सिर्फ़ 10 परिणाम फ़िल्टर करें
+    if user_id in user_status:
+       del user_status[user_id]
     buttons = []
     row = []
-    for app in apps:
-        row.append(InlineKeyboardButton(app["name"], callback_data=f"pre_{app['name']}"))
-        if len(row) == 2:  # 2 कॉलम पूरे होने पर नई रो बनाएँ
+
+    for idx, app in enumerate(apps):
+        short_id = f"app_{start_idx + idx}"  # यूनिक Short ID
+        temp_data[short_id] = app["file_id"]
+
+        row.append(InlineKeyboardButton(app["file_name"], callback_data=f"pre_{short_id}"))
+
+        if len(row) == 2:
             buttons.append(row)
             row = []
-    
-    # अगर कोई बटन बचा रह जाए तो उसे भी जोड़ें
+
     if row:
         buttons.append(row)
 
-    msg.edit(
-        "Please Choose An App :",
+    # पेज नेविगेशन बटन
+    nav_buttons = []
+    if page > 1:
+        nav_buttons.append(InlineKeyboardButton("⬅ Previous", callback_data=f"page_{page-1}_{search_query}"))
+    if page < total_pages:
+        nav_buttons.append(InlineKeyboardButton("Next ➡", callback_data=f"page_{page+1}_{search_query}"))
+
+    if nav_buttons:
+        buttons.append(nav_buttons)
+
+    await msg.edit(
+        f"Please Choose An App:\nPage {page}/{total_pages}",
         reply_markup=InlineKeyboardMarkup(buttons)
     )
 
-"""
-JAY SHREE RAM
-"""
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-import requests
+    return temp_data  # Short IDs को बाद में एक्सेस करने के लिए रिटर्न करें
 
-APP_DETAILS_URL = "https://sainipankaj12.serv00.net/App/get.php?app_name="
 
-def search_and_send_app(client, msg, app_name):
-    response = requests.get(APP_DETAILS_URL + app_name)
-    if response.status_code != 200:
-        msg.edit("❌ Error: Unable to fetch app details. Please contact the admin.")
-        return
-    
+async def search_and_send_app(client, msg, file_id):
     try:
-        app_json = response.json()
-    except ValueError:
-        msg.edit("❌ Error: Invalid response from the server. Please contact the admin.")
-        return
-
-    if app_json.get("status") != "success" or "data" not in app_json:
-        msg.edit("⚠️ No premium app found for your query. Please contact the admin.")
-        return
-
-    app_data = app_json["data"]
-    file_versions = app_data.get("File ID", [])
-
-    if not file_versions:
-        msg.edit("⚠️ No versions available for this app.")
-        return
-
-    # 🔹 **Inline Keyboard for Version Selection**
-    buttons = [
-        [InlineKeyboardButton(f"{file['version']}", callback_data=f"version_{app_name}_{file['version']}")]
-        for file in file_versions
-    ]
-    print(buttons)
-
-    msg.edit(
-        f"📲 **{app_name}**\n\n🔽 Select a version to download:",
-        reply_markup=InlineKeyboardMarkup(buttons)
-    )
-
-def send_selected_version(client, callback_query: CallbackQuery, welddd):
-    data = callback_query.data.split("_")
-    if len(data) < 3:
-        callback_query.answer("Invalid selection!", show_alert=True)
-        return
-
-    app_name = data[1]
-    version = data[2]
-
-    # 🔹 Get the selected version details
-    response = requests.get(f"{APP_DETAILS_URL}{app_name}&version={version}")
-    if response.status_code != 200:
-        callback_query.message.edit("❌ Error fetching the version details.")
-        return
-    
-    try:
-        version_data = response.json()
-    except ValueError:
-        callback_query.message.edit("❌ Invalid response from server.")
-        return
-
-    if version_data.get("status") != "success":
-        callback_query.message.edit("⚠️ This version is not available.")
-        return
-
-    file_id = version_data.get("file_id")
-    total_downloads = version_data.get("total_downloads")
-    app_details = version_data.get("app_details")
-
-    if not file_id:
-        callback_query.message.edit("⚠️ File not found.")
-        return
-
-    details_text = f"""📲 <b>{app_name}</b>  
-🔹 <b>Version:</b> {version} 
-📥 <b>Total Downloads:</b> {total_downloads}
-⚜️ <b>App Details : </b> {app_details}
-"""
-
-    user_id = callback_query.message.chat.id
-    try:
-        welddd.delete()
-        callback_query.answer("📥 Download Started!")
-        del user_status[user_id]
-        respo = send_document(BOT_TOKEN, user_id,app_name, file_id, details_text,True,"HTML")
-        if respo == "OK":
-          return
-        else:
-          callback_query.message.reply_text("⚠️ Requested app not found. Please contact the admin.")
-          return
+        chat_id = msg.chat.id
+        res = send_document(chat_id, file_id, caption="Hello Enjoy This😊😊", protect_content=True, parse_mode="HTML")
+        if res =="OK":
+          await msg.delete()
+        elif res =="ER":
+          await msg.edit("Failed to send the file. pleaee contect to admin")
+        
     except Exception as e:
-        callback_query.message.reply_text("⚠️ Requested app not found. Please contact the admin.")
-        client.send_message(
-            FILE_CHANNEL_ID,
-            f" **USER ID**: {user_id} \n\n⚠️ **Error:** {str(e)}"
-        )
+        await msg.edit("Failed to send the file.")
+        print(f"Error: {e}")
 
-
-def send_document(bot_token, chat_id, app_name, file_id, caption="", protect_content=True, parse_mode="HTML"):
-    url = f"https://api.telegram.org/bot{bot_token}/sendDocument"
-    
+def send_document(chat_id, file_id, caption="", protect_content=True, parse_mode="HTML"):
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument"
+    user_id = chat_id
+    print(saveii)
+    print(saveii[user_id])
+    search_query = saveii[user_id]['search_query'] 
+    page = saveii[user_id]['page']
     keyboard = {
         "inline_keyboard": [
             [{"text": "🔍Search Again", "callback_data": "premium_apps"}],
-            [{"text": "🔙Back", "callback_data": f"pre_{app_name}"},
+            [{"text": "🔙Back", "callback_data": f"page_{page}_{search_query}"},
             {"text": "🏠 Home", "callback_data": "home"}]
         ]
     }
@@ -171,3 +120,22 @@ def send_document(bot_token, chat_id, app_name, file_id, caption="", protect_con
         return "OK"
     else:
         return "ER"
+async def premiumcall12345(client, query):
+  if query.data.startswith("page_"):
+        _, page, search_query = query.data.split("_")
+        page = int(page)
+    
+        msg = query.message
+        await search_and_send_inline(msg, search_query, page)  
+async def premium_app_send(client, query):
+      user_id = query.from_user.id  # Get user ID
+      user_name = query.from_user.first_name  # Extract user name
+      if query.data.startswith("pre_"):
+        short_id = query.data[4:]  # "pre_" के बाद का टेक्स्ट निकालें
+        file_id = temp_data.get(short_id)  # Short ID से असली File ID प्राप्त करें
+        if not file_id:
+           await query.answer("File not found!", show_alert=True)
+           return
+        msg = await query.message.reply_text("Please Wait...")
+        await query.message.delete()
+        await search_and_send_app(client, msg, file_id)
