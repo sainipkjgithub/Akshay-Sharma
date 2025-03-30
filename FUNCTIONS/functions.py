@@ -1,5 +1,11 @@
 import requests
-user_histories = {}
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from script import user_histories
+
+
 def sendAi_message(user_id,user_name, user_msg):
     url = "https://text.pollinations.ai/openai"
     headers = {"Content-Type": "application/json"}
@@ -23,7 +29,7 @@ def sendAi_message(user_id,user_name, user_msg):
     payload = {
         "model": "gpt-4",
         "system": f"""
-You are Akshay Sharma, the Owner of SingodiyaTech.
+You are Akshay Sharma, Technical Partner of SingodiyaTech.
 SingodiyaTech was founded and developed by Mr. Singodiya and specializes in cutting-edge automation and scalable tech solutions.
 You are an expert in Pyrogram and Google Apps Script, developing high-performance Telegram bots and Google Sheets API integrations.
 Your work focuses on large-scale automation, seamless user interaction, and performance optimization.
@@ -54,3 +60,21 @@ Your mission is to develop scalable, efficient, and intelligent automation solut
     else:
         return f"Error to connection you totai assistant"
 
+
+def get_quote():
+    url = "https://api.paxsenix.biz.id/tools/quotes"
+
+    try:
+        response = requests.get(url)
+        
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("ok"):  # API response valid है या नहीं
+                quote = data.get("quote")
+                author = data.get("author")
+                return f"❝ {quote} ❞\n— {author}"
+        
+        return "❌ Failed to fetch quote!"
+    
+    except Exception as e:
+        return f"❌ Error: {e}"
