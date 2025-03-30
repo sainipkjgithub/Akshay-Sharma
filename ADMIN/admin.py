@@ -13,20 +13,24 @@ import asyncio
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from script import FILE_CHANNEL_ID,admin_app_details
-
+from script import FILE_CHANNEL_ID,admin_app_details,admins
+API_URL = "https://sainipankaj12.serv00.net/App/Pre/index.php"
 cancel12 = InlineKeyboardMarkup([
         [InlineKeyboardButton("🚫Cancel", callback_data="cancel")]])
 admin_keyboard  = InlineKeyboardMarkup([
         [InlineKeyboardButton("Upload Premium App", callback_data="adm_upload_premium_app")],
         [InlineKeyboardButton("BLOCK USER", callback_data="adm_block_user"),
         InlineKeyboardButton("Add Admin", callback_data="adm_add_admin")],
+        [InlineKeyboardButton("ADMINS", callback_data="adm_admins")],
         [InlineKeyboardButton("⚜️Home", callback_data="home")]
     ])
 cancelkro = ReplyKeyboardMarkup(
     [[KeyboardButton("🚫CANCEL")]],
     resize_keyboard=True
 )
+upload_premium  = InlineKeyboardMarkup([
+        [InlineKeyboardButton("Upload Menually", callback_data="adm_upload_menual")],
+        [InlineKeyboardButton("GET FROM CHANNEL", callback_data="adm_get_from_channel")]])
 def adminCommand(client,message, admins):
     user_id = message.from_user.id
     if user_id not in admins:
@@ -42,11 +46,24 @@ def adminCallback(client, callback_query,user_status,admins):
     real_msg = callback_data.replace("adm_", "", 1)  # Removes "adm_" prefix
     #callback_query.message.reply_text(f"🔹 Real Message: {real_msg}")
     if real_msg =="upload_premium_app":
+      callback_query.message.edit_text(f"Hey {first_name}, How do you want to add premium app",reply_markup=upload_premium)
+    elif real_msg == "get_from_channel":
+      callback_query.message.edit_text(f"Hey {first_name}, Please send me Channel Id Without @ .",reply_markup=cancelkro)
+      user_status[user_id] = "adm_upload_app_from_channel"
+    elif real_msg =="upload_menual":
       callback_query.message.reply_text(f"Hey {first_name}, Please send me a App to add that in database.",reply_markup=cancelkro)
       user_status[user_id] = "adm_upload_premium_app"
     elif real_msg =="block_user":
       callback_query.message.reply_text(f"Hey {first_name} , Please Send a User Id to Block him.")
       user_status[user_id] = "adm_block_user_id"
+    elif real_msg == "admins":
+        admin_list = "🔹 **Admins List** 🔹\n\n"
+
+        for user_id, role in admins.items():
+           user = client.get_users(user_id)  # Telegram से यूज़रनेम प्राप्त करें
+           user_name = user.first_name if user.first_name else "Unknown"
+           admin_list += f"**{role}** : [{user_name}](tg://user?id={user_id})\n"
+        callback_query.message.edit_text(admin_list,reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("CLOSE 🔒", callback_data="admin_home")]]))
     elif real_msg =="add_admin":
       if admins[user_id] == "Temp Admin":
         callback_query.message.reply_text(f"Hey {first_name}, You Can't Add anyone to the admin.!")
@@ -58,13 +75,11 @@ def adminCallback(client, callback_query,user_status,admins):
         user_status[user_id] = "adm_add_admin"
       else:
         callback_query.message.edit_text(f"Hey {first_name}, You Can't add anyone to admin because you are are not a Parmant admin")
-    elif real_msg =="upload_ok":
-      callback_query.message.edit_text("Hello Provide Me app name",reply_markup=cancelkro)
-      user_status[user_id] = "adm_enter_app_name"
+    
     elif real_msg =="upload_ar":
       callback_query.message.edit_text("Not Sending...",reply_markup=admin_keyboard)
       del admin_app_details[user_id]
-      
+    
 async def admin_session_av(client, message, user_status):
     user_id = message.from_user.id
     user_state = user_status.get(user_id)
@@ -95,7 +110,7 @@ def cancle_session_query(client,query,user_status):
   else:
       del user_status[user_id]
       msg12 = message.reply_text("SESSION Canceled", reply_markup=ReplyKeyboardRemove())
-      msg12.edit("Hello",reply_markup=admin_keyboard)
+      msg12.reply_text("Hello Admin Session Cancled Now Choose Next Option..",reply_markup=admin_keyboard)
       time.sleep(0.7)
       msg12.delete()
 
@@ -115,106 +130,154 @@ def cancle_session_msg(client,message,user_status):
       msg12.delete()
   elif real_msg.startswith("enter_app"):
      del admin_app_details[user_id]
-     msg12.edit("Hello admin",reply_markup=admin_keyboard)
+     msg12.edit("Hello Admin Session Cancled Now Choose Next Option..",reply_markup=admin_keyboard)
   else:
       del user_status[user_id]
       msg12 = message.reply_text("Session Canceled!", reply_markup=ReplyKeyboardRemove())
-      msg12.edit("Hello",reply_markup=admin_keyboard)
+      msg12.reply_text("Hello Admin Session Cancled Now Choose Next Option..",reply_markup=admin_keyboard)
       time.sleep(0.7)
       msg12.delete()
 
-def process_adm_text_messages(client,message,user_status,admin_app_details,admins):
+async def process_adm_text_messages(client,message,user_status,admin_app_details,admins):
     user_id = message.from_user.id
+    user_text  = message.text
     user_state = user_status.get(user_id)
     real_msg = user_state.replace("adm_", "", 1) 
-    if real_msg == "enter_app_name":
-      app_name = message.text
-      admin_app_details[user_id]["app_name"] = app_name
-      message.reply_text("Version Of app")
-      user_status[user_id] = "adm_enter_app_version"
-    elif real_msg == "enter_app_version":
-      app_version = message.text
-      admin_app_details[user_id]["app_version"] = app_version
-      message.reply_text("Who Is App Provider..?")
-      user_status[user_id] = "adm_enter_app_provider"
-    elif real_msg == "enter_app_provider":
-      app_provider = message.text
-      admin_app_details[user_id]["app_provider"] = app_provider
-      message.reply_text("About App..")
-      user_status[user_id] = "adm_enter_app_details"
-    elif real_msg == "enter_app_details":
-      app_details = message.text
-      admin_app_details[user_id]["app_details"] = app_details
-      message.reply_text("App Category..")
-      user_status[user_id] = "adm_enter_app_category"
-    elif real_msg == "enter_app_category":
-      app_category = message.text
-      app_details = admin_app_details[user_id]["app_details"]
-      file_id = admin_app_details[user_id]["file_id"]
-      app_name = admin_app_details[user_id]["app_name"]
-      app_version = admin_app_details[user_id]["app_version"]
-     # app_logo = admin_app_details[user_id]["app_logo"]
-      app_provider = admin_app_details[user_id]["app_provider"]
-      data = { "App Name": app_name,
-      "File ID": file_id,
-      "Version": app_version,
-      "App Details": app_details,
-      "Provider": app_provider,
-      "Category": app_category
-      }
-    
-      
-
-      url = "https://sainipankaj12.serv00.net/App/post.php"
-      response = requests.post(url, headers={"Content-Type": "application/json"}, data=json.dumps(data))
-      if response.status_code != 200:
-          return
+    if real_msg =="upload_app_from_channel":
       try:
-          response_json = response.json()  # JSON response को dictionary में बदलें
-          if response_json.get("status") == "error":
-            message.reply_text(f"Error :\n Server Response : {response_json.get('message')}")
-            return 
-          
-      except json.JSONDecodeError:
-          message.reply_text(f"Error: Invalid JSON response\n Server Response : {response.text}")
-          return
-      del user_status[user_id]
-      message.reply_text(f"""
-APP DETAILS 
-**APP NAME** : {app_name}
-**APP VERSION** : {app_version}
-**APP CATEGORY** : {app_category}
-** App Provider** : {app_provider}
-**ABOUT APP** : {app_details}
-      """,reply_markup=ReplyKeyboardRemove())
-      message.reply_text(f"Saved SUCCESSFULLY \n Server Response : {response.text}",
-      reply_markup=InlineKeyboardMarkup([
-        [InlineKeyboardButton("Upload more", callback_data="adm_upload_premium_app")]
-        ])
-      )
-    elif real_msg == "block_user_id":
-      block_user = message.text
-      message.reply_text("Thanks For Provide me This Id I am Blocking..")
-    elif real_msg == "add_admin":
-      add_new_admin(client,message,admins,user_status)
+        chat = await client.get_chat(user_text)  # चैनल की जानकारी प्राप्त करें
 
+        await message.reply_text(f"""This Channel Details :
+📢 **{chat.title}**\n
+🆔 ID: `{chat.id}`\n
+👤 Members: {chat.members_count if chat.members_count else 'Unknown'}\n
+📜 Description: {chat.description if chat.description else 'No Description'}
 
-
-
+Now Provide Me First Msg Id..
+        """)
+        user_status[user_id] = "adm_channel_first_id"
+        admin_app_details[user_id] = {}
+        admin_app_details[user_id]['channel_id'] = user_text
+      except Exception as e:
+        await message.reply_text("Failed to fetch channel details.")
+    elif real_msg == "channel_first_id":
+        if not user_text.isdigit():  # चेक करें कि सिर्फ नंबर हैं या नहीं
+            await message.reply_text("❌ Invalid Last ID! Please enter a numeric Channel ID.")
+        else:
+            admin_app_details[user_id]['first_id'] = int(user_text)  # नंबर को int में कन्वर्ट करें
+            await message.reply_text(f"Channel First  Message ID saved: {user_text} \n\n NOW PROVIDE LAST MSG ID..")
+            user_status[user_id] = "adm_channel_last_id"
+    elif real_msg == "channel_last_id":
+        if not user_text.isdigit():  # चेक करें कि सिर्फ नंबर हैं या नहीं
+            await message.reply_text("❌ Invalid Last ID! Please enter a numeric Channel ID.")
+        else:
+            admin_app_details[user_id]['last_id'] = int(user_text)  # नंबर को int में कन्वर्ट करें
+            msg = await message.reply_text(f"Channel Last Message ID saved: {user_text} \n\n Now I AM SAVING FILES TO DATABASE..")
+            await fetch_and_save_files(client, user_id, message)  # Async function को कॉल करें
+            del user_status[user_id]
 def process_adm_photo(client,message,user_status,admin_app_details, FILE_CHANNEL_ID):
       user_id = message.from_user.id
       user_state = user_status.get(user_id)
-      real_msg = user_state.replace("adm_", "", 1) 
-      if real_msg =="enter_app_logo":
-         forwarded = message.forward(FILE_CHANNEL_ID)
-         file_id = forwarded.photo.file_id
-         app_logo = f"https://sainipankaj12.serv00.net/TelegramStream.php?file_id={file_id}&file_type=photo"
-         admin_app_details[user_id]["app_logo"] = app_logo
-         message.reply_text("✅️App Logo Saved.\nNow Provide App category...",reply_markup=cancel12)
-         user_status[user_id] = "adm_enter_app_category"
-      else:
-        message.reply_text("Please Provide A text...")
+      real_msg = user_state.replace("adm_", "", 1)
+      message.reply_text("Please Provide A text...")
 
+
+
+async def send_data(file_id, file_name):
+    data = {
+        "file_id": file_id,
+        "file_name": file_name
+    }
+    headers = {"Content-Type": "application/json"}
+    
+    try:
+        response = requests.post(API_URL, headers=headers, data=json.dumps(data))
+        response_json = response.json()  # API का JSON रिस्पॉन्स
+        
+        if response.status_code == 200 and response_json.get("success") is True:
+            print(f"Sent: {file_name} - OK")
+            return "OK"
+        else:
+            print(f"Sent: {file_name} - ER")
+            return "ER"
+
+    except Exception as e:
+        print(f"Error sending {file_name}: {e}")
+        return "ER"
+
+async def fetch_and_save_files(client, user_id, message):
+    try:
+        details = admin_app_details.get(user_id, {})  
+        source_channel = details.get('channel_id')
+        target_channel = FILE_CHANNEL_ID  # Private Channel ID
+        first_msg_id = details.get('first_id')
+        last_msg_id = details.get('last_id')
+
+        if not source_channel or not target_channel or not first_msg_id or not last_msg_id:
+            return await message.reply_text("❌ Missing required details!")
+
+        total_files = last_msg_id - first_msg_id + 1  
+        saved_files = 0
+        skipped_files = 0
+        error_count = 0
+
+        status_msg = await message.reply_text(
+            f"📢 **Processing Started**\n\n"
+            f"📂 **Total Files to Process:** {total_files}\n"
+            f"📥 **Saved Files:** {saved_files}\n"
+            f"⏭ **Skipped Files:** {skipped_files}\n"
+            f"⚠ **Errors Encountered:** {error_count}"
+        )
+
+        for index, msg_id in enumerate(range(first_msg_id, last_msg_id + 1), start=1):
+            try:
+                fetched_message = await client.get_messages(source_channel, msg_id)  
+
+                if fetched_message and fetched_message.document:
+                    file_name = fetched_message.document.file_name
+
+                    if file_name.endswith(".apk"):  # ✅ सिर्फ .apk फाइल ही सेव करें
+                        copied_msg = await fetched_message.copy(target_channel)  # ✅ Forward Without Tag
+                        file_id = copied_msg.document.file_id
+                        
+                        response = await send_data(file_id, file_name)  # ✅ File ID सेव करें
+
+                        if response == "OK":
+                            saved_files += 1
+                        else:
+                            error_count += 1  # अगर API से "OK" न मिले तो एरर काउंट बढ़ाएं
+
+                        await asyncio.sleep(3)  
+                    else:
+                        skipped_files += 1  # .apk न होने पर स्किप करें
+
+                else:
+                    skipped_files += 1  
+                
+            except Exception as e:
+                print(f"Skipping message {msg_id} due to error: {e}")
+                error_count += 1  
+                continue  
+
+            if index % 50 == 0 or index == total_files:  
+                await status_msg.edit(
+                    f"📢 **Processing Update**\n\n"
+                    f"📂 **Total Files to Process:** {total_files}\n"
+                    f"📥 **Saved Files:** {saved_files}\n"
+                    f"⏭ **Skipped Files:** {skipped_files}\n"
+                    f"⚠ **Errors Encountered:** {error_count}"
+                )
+
+        await status_msg.edit(
+            f"✅ **Processing Completed!**\n\n"
+            f"📂 **Total Files Processed:** {total_files}\n"
+            f"📥 **Successfully Saved:** {saved_files}\n"
+            f"⏭ **Skipped Files:** {skipped_files}\n"
+            f"⚠ **Errors Encountered:** {error_count}"
+        )
+
+    except Exception as e:
+        await message.reply_text(f"❌ Error: {e}")
 
 async def add_admin_temporarily(client, message,admins,FILE_CHANNEL_ID):
     if not message.text.startswith("/start admin_138998_"):
