@@ -74,7 +74,7 @@ def get_quote():
                 author = data.get("author")
                 return f"❝ {quote} ❞\n— {author}"
         
-        return "❌ Failed to fetch quote!"
+        return f"❌ Failed to fetch quote! {response.status_code}  and.  response.text"
     
     except Exception as e:
         return f"❌ Error: {e}"
