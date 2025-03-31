@@ -62,7 +62,7 @@ Your mission is to develop scalable, efficient, and intelligent automation solut
 
 
 def get_quote():
-    url = "https://api.paxsenix.biz.id/tools/quotes"
+    url = "http://sainipankaj12.serv00.net/Quotes/?random"
 
     try:
         response = requests.get(url)
@@ -74,7 +74,7 @@ def get_quote():
                 author = data.get("author")
                 return f"❝ {quote} ❞\n— {author}"
         
-        return f"❌ Failed to fetch quote! {response.status_code}  and.  {response.text}"
+        return "❌ Failed to fetch quote!"
     
     except Exception as e:
         return f"❌ Error: {e}"
