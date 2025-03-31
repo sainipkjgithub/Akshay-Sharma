@@ -198,7 +198,6 @@ Start sharing and start earning now! 🚀
       previous_messages[query.from_user.id] = msg.id  # 🔄 यहाँ `.message_id` की जगह `.id` करें
     elif query.data == "motivational_quota":
       query.message.edit_text("Getting Quota...")
-      time.sleep(5)
       query.message.edit_text(get_quote(),reply_markup=InlineKeyboardMarkup([
           [InlineKeyboardButton("♻️Refresh", callback_data="motivational_quota")],
           [InlineKeyboardButton("🔙Back", callback_data="adm_upload_premium_app"),
