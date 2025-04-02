@@ -58,7 +58,7 @@ Your mission is to develop scalable, efficient, and intelligent automation solut
 
         return assistant_msg
     else:
-        return f"Error to connection you totai assistant"
+        return f"Error to connection you to ai assistant"
 
 
 def get_quote():
