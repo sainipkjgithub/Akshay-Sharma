@@ -63,6 +63,8 @@ async def search_and_send_inline(msg, search_query, page=1):
     nav_buttons = []
     if page > 1:
         nav_buttons.append(InlineKeyboardButton("⬅ Previous", callback_data=f"page_{page-1}_{search_query}"))
+    if total_pages == 1:
+      nav_buttons.append(InlineKeyboardButton("🔍 Search Again", callback_data=f"premium_apps"))
     if total_pages > 1:
       nav_buttons.append(InlineKeyboardButton(f"{page}/{total_pages}", callback_data=f"premium_apps"))
     if page < total_pages:
@@ -72,7 +74,7 @@ async def search_and_send_inline(msg, search_query, page=1):
         buttons.append(nav_buttons)
 
     await msg.edit(
-        f"Here is your Search Result For : \n{search_query} \n\n Please Choose An App:\n",
+        f"Here is your Search Result For : \n**{search_query}** \n\n Please Choose An App:\n",
         reply_markup=InlineKeyboardMarkup(buttons)
     )
 
