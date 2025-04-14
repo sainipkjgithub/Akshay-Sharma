@@ -1,5 +1,5 @@
 """Jai Shree Ram"""
-#Version 2.3.4
+#Version 2.3.6
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
 
@@ -143,7 +143,8 @@ explore_more = InlineKeyboardMarkup([
         InlineKeyboardButton("Download Any Video", callback_data="download_any_video")],
         [InlineKeyboardButton("AI Image Editor", callback_data="ai_image_editor"),
          InlineKeyboardButton("EDUCATION", callback_data="education")],
-         [InlineKeyboardButton("Motivational Quota", callback_data="motivational_quota")],
+         [InlineKeyboardButton("Motivational Quota", callback_data="motivational_quota"),
+         InlineKeyboardButton("Anonymous Chat", callback_data="any_chat_start")],
          [InlineKeyboardButton("Premium Apps", callback_data="premium_apps")],
         [InlineKeyboardButton("🔙Back", callback_data="home")]
     ])
@@ -205,6 +206,3 @@ back_enter_rollnumber = InlineKeyboardMarkup([
     [InlineKeyboardButton("🔙Back", callback_data="cancel"),
     InlineKeyboardButton("🏠 HOME", callback_data="home")]
 ])
-verify_premium_upload  = InlineKeyboardMarkup([
-        [InlineKeyboardButton("Upload Premium App", callback_data="adm_upload_ok"),
-        InlineKeyboardButton("Don't Upload", callback_data="adm_upload_ar")]])
