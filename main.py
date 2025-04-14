@@ -25,7 +25,7 @@ def home():
     return "All in one Bot is running."
 #########
 
-
+from script import send_telegram_message
 
 
 
