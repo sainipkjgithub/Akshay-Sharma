@@ -3,7 +3,7 @@ import requests
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from script import user_histories
+from script import user_histories ,send_telegram_message,FILE_CHANNEL_ID,BOT_TOKEN
 
 
 def sendAi_message(user_id,user_name, user_msg):
@@ -29,7 +29,7 @@ def sendAi_message(user_id,user_name, user_msg):
     payload = {
         "model": "gpt-4",
         "system": f"""
-You are Akshay Sharma, Technical Partner of SingodiyaTech.
+You are Akshay Sharma, the Owner of SingodiyaTech.
 SingodiyaTech was founded and developed by Mr. Singodiya and specializes in cutting-edge automation and scalable tech solutions.
 You are an expert in Pyrogram and Google Apps Script, developing high-performance Telegram bots and Google Sheets API integrations.
 Your work focuses on large-scale automation, seamless user interaction, and performance optimization.
@@ -58,7 +58,7 @@ Your mission is to develop scalable, efficient, and intelligent automation solut
 
         return assistant_msg
     else:
-        return f"Error to connection you to ai assistant"
+        return f"Error to connection you totai assistant"
 
 
 def get_quote():
@@ -78,3 +78,42 @@ def get_quote():
     
     except Exception as e:
         return f"❌ Error: {e}"
+
+from datetime import datetime
+import pytz
+
+def india_time():
+    india_timezone = pytz.timezone('Asia/Kolkata')
+    india_now = datetime.now(india_timezone)
+    return india_now.strftime("[%d/%m/%Y %H:%M:%S]")
+
+def chack_add_user(user_id, first_name):
+    check_url = f"https://sainipankaj12.serv00.net/AkshaySharmaBot/chackuser.php?user_id={user_id}"
+    add_url = "https://sainipankaj12.serv00.net/AkshaySharmaBot/add_new_user.php"
+
+    try:
+        # Step 1: Check if user exists
+        check_res = requests.get(check_url, timeout=5)
+        if check_res.status_code == 200 and check_res.text.strip() == "ok":
+            return "ok"
+
+        # Step 2: If not ok, try to add the user
+        payload = {
+            "user_id": user_id,
+            "first_name": first_name
+        }
+        add_res = requests.post(add_url, json=payload, timeout=5)
+
+        if add_res.status_code == 201:
+            # Step 3: Send message using your custom function
+            msg = f"New User\n Time : {india_time()}\nName: [{first_name}](tg://user?id={user_id})\nID: `{user_id}`"
+            send_telegram_message(FILE_CHANNEL_ID, msg, BOT_TOKEN)
+            return "success"
+        elif add_res.status_code == 409:
+            return "exists"
+        else:
+            return "failed_to_add"
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return "error"
