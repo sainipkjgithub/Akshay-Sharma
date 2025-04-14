@@ -6,10 +6,11 @@ from script1 import CALLBACK123, home_keyboard, ReplyMarkup123, startmsg, wrongb
 from ReplyMarckep import download_any_video,available_boards, chat_with_assistant, cancel12, back_enter_rollnumber, cancelkro ,earnMoney,help_keyboard,explore_more,admin_home_keyboard
 from EARN.earn import earn_Money123GetClick,provide_earn_Money_link,term_and_conditions,refresh_total_clicks,refresh_link,refresh_today_clicks,refresh_clicks,withdraw_handler
 from aiImageEditor import ai_image_enhancer
-from FUNCTIONS.functions import sendAi_message,get_quote
+from FUNCTIONS.functions import sendAi_message,get_quote, chack_add_user, india_time
 from PremiumApps.premium import search_and_send_inline, search_and_send_app ,premiumcall12345,premium_app_send
 from ADMIN.admin import admin_session_av, cancle_session_query, cancle_session_msg ,adminCommand,adminCallback,process_adm_photo,process_adm_text_messages,add_admin_temporarily,send_data
 from start_param import start_params
+from any_chat import any_chat_start,chat_stop_handler, forward_message
 import requests
 import time
 from flask import Flask, request, jsonify
@@ -30,7 +31,27 @@ def home():
 
 ##############₹%%%%^₹%^₹%^
 # बॉट के लिए API क्रेडेंशियल्स
-from script import FILE_CHANNEL_ID, API_ID, API_HASH, BOT_TOKEN, SEARCH_URL,user_status,admin_app_details, temp_data,admins,user_histories,UPLOAD_URL, API_URL
+import script
+
+# Variables ko local alias banake bind kar lo
+app = script.app
+FILE_CHANNEL_ID = script.FILE_CHANNEL_ID
+API_ID = script.API_ID
+API_HASH = script.API_HASH
+BOT_TOKEN = script.BOT_TOKEN
+SEARCH_URL = script.SEARCH_URL
+user_status = script.user_status
+admin_app_details = script.admin_app_details
+temp_data = script.temp_data
+admins = script.admins
+user_histories = script.user_histories
+UPLOAD_URL = script.UPLOAD_URL
+API_URL = script.API_URL
+send_telegram_message = script.send_telegram_message
+waiting_users = script.waiting_users
+active_chats = script.active_chats
+message_map = script.message_map
+
 
 user_board_details = {}
 
@@ -42,23 +63,67 @@ wb_id_dict = {
     "up_12": 100
 }
 # Pyrogram बॉट क्लाइंट सेटअप
-app = Client(
-    "my_bot",
-    api_id=API_ID,
-    api_hash=API_HASH,
-    bot_token=BOT_TOKEN
-)
 
 
 
 @app.on_message(filters.command("admin"))
 def admin(client, message):
   adminCommand(client,message,admins)
-    
-   # message.reply_text(f"✅ Welcome, {admins[user_id]}!")
+
+@app.on_message(filters.command("stop") & filters.private & ~filters.me)
+async def stop_handler12(client, message):
+  await chat_stop_handler(client, message)
+
+@app.on_message(filters.command("broadcast") & filters.user(list(admins.keys())))
+def broadcast_reply(client, message: Message):
+    try:
+        if not message.reply_to_message:
+            return message.reply("Please reply to a message to broadcast.")
+
+        res = requests.get("https://sainipankaj12.serv00.net/AkshaySharmaBot/userdetails.json")
+        users = res.json()
+
+        success = 0
+        failed_users = []
+
+        for user in users:
+            try:
+                client.copy_message(
+                    chat_id=user['user_id'],
+                    from_chat_id=message.reply_to_message.chat.id,
+                    message_id=message.reply_to_message.id
+                )
+                success += 1
+            except:
+                failed_users.append(user)
+
+        # Handle failed users
+        for user in failed_users:
+            try:
+                report_text = f"Failed to send message to user:\nID: `{user['user_id']}`\nName: `{user['first_name']}`"
+                send_telegram_message(message.from_user.id, report_text, BOT_TOKEN)
+
+                del_url = f"https://sainipankaj12.serv00.net/AkshaySharmaBot/delete_user.php?user_id={user['user_id']}"
+                requests.get(del_url)
+
+            except Exception as e:
+                print(f"Failed to report/delete user {user['user_id']}: {e}")
+
+        message.reply(f"Broadcast sent to {success} users. {len(failed_users)} failed.")
+
+    except Exception as e:
+        message.reply(f"Error: {e}")
+waiting_users = []
+active_chats = {}   # {user_id1: user_id2, user_id2: user_id1}
+message_map = {}  # {sender_msg_id: receiver_msg_id}
+# Dictionary: {user_id: partner_id}
+
+
 @app.on_message(filters.command("start") & ~filters.me)
 async def start(client, message):
     user_id = message.from_user.id
+    first_name = message.from_user.first_name
+    chack_add_user(user_id, first_name)
     user_name = message.from_user.first_name
     command_args = message.text.split(" ", 1)  # "/start" के बाद के डेटा को अलग करने के लिए
     start_param = command_args[1] if len(command_args) > 1 else None  # "/start" के बाद का डेटा
@@ -98,6 +163,10 @@ def helpcommand(client, message):
 @app.on_callback_query(filters.regex("delete"))
 async def delete(client, callback_query):
    await callback_query.message.delete()
+
+@app.on_callback_query(filters.regex("^any_"))
+def any_chat(client, callback_query):
+    any_chat_start(client, callback_query)
 @app.on_callback_query(filters.regex("^adm_upload_ok_"))
 async def admin_callback456(client, callback_query):
     user_id = callback_query.from_user.id
@@ -143,6 +212,11 @@ async def premiumcall12(client, query: CallbackQuery):
 
 @app.on_callback_query()
 def callback_query(client, query: CallbackQuery):
+    import script
+    waiting_users = script.waiting_users
+    active_chats = script.active_chats
+    message_map = script.message_map
+    user_status = script.user_status
     user_id = query.from_user.id  # Get user ID
     user_name = query.from_user.first_name  # Extract user name
     if query.data == "chat_with_assistant":
@@ -269,6 +343,25 @@ Start sharing and start earning now! 🚀
         query.message.delete()
       elif user_status.get(user_id) == "download_any_video":
         del user_status[user_id]
+      elif user_status.get(user_id) == "any_chat_waiting":
+         print(waiting_users)
+         waiting_users.remove(user_id)
+         del user_status[user_id]
+         query.message.delete()
+         query.message.reply_text("Searching Stoped!",reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙Back", callback_data="explore_more")]]))
+      elif user_status.get(user_id) == "any_chat_connected":
+        if user_id in active_chats:
+            partner_id = active_chats[user_id]
+            del active_chats[user_id]
+            del active_chats[partner_id]
+            del user_status[user_id]
+            del user_status[partner_id]
+            client.send_message(partner_id, "Chat Stopped by your partner..")
+            msg12 = query.message.reply_text("You Stoped this chat!", reply_markup=ReplyKeyboardRemove())
+        else:
+            query.message.reply("आप किसी से जुड़े नहीं हैं।")
+        
+        query.message.delete()
       elif user_status.get(user_id) == "search_premium_app":
         del user_status[user_id]
         msg12 = query.message.reply_text("Session Canceled!", reply_markup=ReplyKeyboardRemove())
@@ -322,11 +415,17 @@ async def process_text_messages(client: Client, message: Message):
     user_id = message.from_user.id
     user_msg = message.text
     user_name = message.from_user.first_name
+    import script
+    user_status = script.user_status
+    print(user_status)
     if user_status.get(user_id) == "chatting_with_ai":
       answer = sendAi_message(user_id,user_name, user_msg)
       await message.reply_text(answer)
     # WB ID Dictionary for different boards and classes
-
+    elif user_status.get(user_id) == "any_chat_waiting":
+      await message.reply_text("Sorry 😔, We could not get connected you to any partner.\n\n I am searching yet...",reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🚫Cancel Searching", callback_data="cancel")]]))
+    elif user_status.get(user_id) == "any_chat_connected":
+      await forward_message(client, message)
     elif user_status.get(user_id) == "enter_roll_number":
         if user_id in user_board_details:
             board = user_board_details[user_id]["board"]
@@ -382,6 +481,8 @@ ON CANCEL msg12
 """
 @app.on_message(filters.text & ~filters.me & ~filters.group & ~filters.command("start") & filters.regex(r"^🚫CANCEL$"))
 def canclemsg(client: Client, message: Message):
+    import script
+    user_status = script.user_status
     user_id = message.from_user.id
     user_msg = message.text
     user_name = message.from_user.first_name
@@ -428,6 +529,8 @@ def canclemsg(client: Client, message: Message):
 
 @app.on_message(filters.private & filters.photo & ~filters.me)
 def forward_photo(client, message):
+    import script
+    user_status = script.user_status
     user_id = message.from_user.id
     if user_status.get(user_id) == "chatting_with_ai":
       message.reply_text("Sorry I can't see your sended Photo",reply_markup=cancel12)
@@ -446,6 +549,8 @@ def forward_photo(client, message):
     
 @app.on_message(filters.private & filters.document & ~filters.me)
 async def get_file_id(client, message):
+    import script
+    user_status = script.user_status
     user_id = message.from_user.id
     if user_status.get(user_id) == "chatting_with_ai":
       await message.reply_text("Sorry I cant see your sended Document",reply_markup=cancel12)
@@ -506,28 +611,34 @@ def download_image(image_url, save_path):
             file.write(response.content)
         return save_path
     return None
-def send_telegram_message(chat_id, text, bot_token):
-    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
-    payload = {
-        "chat_id": chat_id,
-        "text": text,
-        "parse_mode": "Markdown"
-    }
-    response = requests.post(url, json=payload)
-    return response.json()
-
-
 
 
 def run_flask():
     flask_app.run(host="0.0.0.0", port=8000)
 
-# Function to run Pyrogram bot
+def get_bot_info(bot_token):
+    url = f"https://api.telegram.org/bot{bot_token}/getMe"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        data = response.json()
+        if data.get("ok"):
+            result = data["result"]
+            name = result.get("first_name")
+            username = result.get("username")
+            return name, username
+        else:
+            return None, "Invalid token or bot not found"
+    else:
+        return None, f"HTTP error: {response.status_code}"
+
+
 def run_bot():
     print("Bot is running...")
-    send_telegram_message(FILE_CHANNEL_ID, "BOT STARTED SUCCESSFULLY!", BOT_TOKEN)
+    name, username = get_bot_info(BOT_TOKEN)
+    send_telegram_message(FILE_CHANNEL_ID, f"BOT STARTED SUCCESSFULLY! \n BOT Name : {name}\n Username: @{username}\n Time : {india_time()}", BOT_TOKEN)
     app.run()
-    print("\nShutting Down...")
+    print("\nShutting Down...\n")
     
 
 # Running Flask and Pyrogram bot concurrently using threads
