@@ -10,6 +10,7 @@ from FUNCTIONS.functions import sendAi_message,get_quote, chack_add_user, india_
 from PremiumApps.premium import search_and_send_inline, search_and_send_app ,premiumcall12345,premium_app_send
 from ADMIN.admin import admin_session_av, cancle_session_query, cancle_session_msg ,adminCommand,adminCallback,process_adm_photo,process_adm_text_messages,add_admin_temporarily,send_data
 from start_param import start_params
+from createBot import make_a_bot, add_bot_to
 from any_chat import any_chat_start,chat_stop_handler, forward_message
 import requests
 import time
@@ -24,8 +25,8 @@ flask_app = Flask(__name__)
 def home():
     return "All in one Bot is running."
 #########
-
 from script import send_telegram_message
+
 
 
 
@@ -47,7 +48,6 @@ admins = script.admins
 user_histories = script.user_histories
 UPLOAD_URL = script.UPLOAD_URL
 API_URL = script.API_URL
-send_telegram_message = script.send_telegram_message
 waiting_users = script.waiting_users
 active_chats = script.active_chats
 message_map = script.message_map
@@ -163,6 +163,10 @@ def helpcommand(client, message):
 @app.on_callback_query(filters.regex("delete"))
 async def delete(client, callback_query):
    await callback_query.message.delete()
+
+@app.on_callback_query(filters.regex("make_bot"))
+async def creat_a_bot(client, callback_query):
+  await make_a_bot(client, callback_query)
 
 @app.on_callback_query(filters.regex("^any_"))
 def any_chat(client, callback_query):
@@ -438,9 +442,10 @@ async def process_text_messages(client: Client, message: Message):
                 wb_id = wb_id_dict.get(key, 88)  # Default to 88 if not found
 
                 # Generate result document URL
-                
-                result_link = f"https://sainipankaj12.serv00.net/Result/boardresult.php?tag=raj_10_result&roll_no={roll_no}&year=2024&wb_id={wb_id}&source=3&download"
-                
+                if wb_id == 88  :
+                  result_link = f"https://sainipankaj12.serv00.net/Result/boardresult.php?tag=raj_10th_result&roll_no={roll_no}&year=2025&wb_id={wb_id}&source=3&download"
+                elif wb_id == 89  :
+                  result_link = f"https://sainipankaj12.serv00.net/Result/boardresult.php?tag=raj_12th_result&roll_no={roll_no}&year=2025&wb_id={wb_id}&source=3&download"
                 a = await message.reply_text(f"Please Wait Getting Your Result Data...")
                 # Send document to user
                 result_link_view = result_link.replace("download", "see")
@@ -459,7 +464,17 @@ async def process_text_messages(client: Client, message: Message):
                     await a.delete()
                     return
                 else:
-                  await a.edit_text(f"Faild to get your result!!. Make sure your provided Roll Number is Correct.")
+                  link = "https://sainipankaj12.serv00.net/Result/faild.json"
+                  res = requests.get(link).json()
+
+                  if wb_id == 88:
+                      msg = res.get("10", "Unknown error.")
+                  elif wb_id == 89:
+                     msg = res.get("12", "Unknown error.")
+                  else:
+                      msg = "..."
+
+                  await a.edit_text(f"**Failed to get your result!!**\n{msg}")
                 
             else:
                 await message.reply_text("Invalid roll number! Please enter a Valid Roll Number." ,reply_markup=back_enter_rollnumber)
@@ -474,6 +489,8 @@ async def process_text_messages(client: Client, message: Message):
        await search_and_send_inline(msg,Search_Query)
     elif user_status.get(user_id) and user_status[user_id].startswith("adm_"):
       await process_adm_text_messages(client,message,user_status,admin_app_details,admins)
+    elif user_status.get(user_id) and user_status[user_id].startswith("cb_"):
+      await add_bot_to(client,message)
     else:
         await message.reply_text("⚠️ Please Select a Valid Option.",reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("⚜Home", callback_data="home")]]))
 """
@@ -572,6 +589,7 @@ Saved Successfully in database :
       """,reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙Back", callback_data="adm_upload_premium_app")]]))
          await send_data(file_id, file_name)
          del user_status[user_id]
+  
     else:
       if user_id in admins:
          forwarded = await message.copy(FILE_CHANNEL_ID)
