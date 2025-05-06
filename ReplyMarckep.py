@@ -1,5 +1,5 @@
 """Jai Shree Ram"""
-#Version 2.3.6
+#Version 2.3.4
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
 
@@ -10,6 +10,7 @@ home_keyboard = InlineKeyboardMarkup([
          InlineKeyboardButton("💬 Chat With Assistant", callback_data="chat_with_assistant")],
          [InlineKeyboardButton("💰 Earn Money", callback_data="earn_money")],
          [InlineKeyboardButton("Explore More", callback_data="explore_more")],
+         [InlineKeyboardButton("🤖 Make Your Own Bot", callback_data="make_bot")],
         [InlineKeyboardButton("❓ Get Help", callback_data="get_help"),
         InlineKeyboardButton("ℹ️ About Us", callback_data="about_us")]
          
@@ -21,6 +22,7 @@ admin_home_keyboard = InlineKeyboardMarkup([
          InlineKeyboardButton("💬 Chat With Assistant", callback_data="chat_with_assistant")],
          [InlineKeyboardButton("💰 Earn Money", callback_data="earn_money")],
          [InlineKeyboardButton("Explore More", callback_data="explore_more")],
+         [InlineKeyboardButton("🤖 Make Your Own Bot", callback_data="make_bot")],
         [InlineKeyboardButton("❓ Get Help", callback_data="get_help"),
         InlineKeyboardButton("ℹ️ About Us", callback_data="about_us")],
         [InlineKeyboardButton("Admin", callback_data="admin_home")]
