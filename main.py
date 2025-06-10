@@ -9,6 +9,7 @@ from aiImageEditor import ai_image_enhancer
 from FUNCTIONS.functions import sendAi_message,get_quote, chack_add_user, india_time
 from PremiumApps.premium import search_and_send_inline, search_and_send_app ,premiumcall12345,premium_app_send
 from ADMIN.admin import admin_session_av, cancle_session_query, cancle_session_msg ,adminCommand,adminCallback,process_adm_photo,process_adm_text_messages,add_admin_temporarily,send_data
+from ADMIN.AdmEducation import admin_edu , admin_education1
 from start_param import start_params
 from createBot import make_a_bot, add_bot_to
 from any_chat import any_chat_start,chat_stop_handler, forward_message
@@ -59,8 +60,8 @@ previous_messages = {}
 wb_id_dict = {
     "rbse_10": 88,
     "rbse_12": 89,
-    "up_10": 99,
-    "up_12": 100
+    "up_10": 100,
+    "up_12": 99
 }
 # Pyrogram बॉट क्लाइंट सेटअप
 
@@ -113,11 +114,6 @@ def broadcast_reply(client, message: Message):
 
     except Exception as e:
         message.reply(f"Error: {e}")
-waiting_users = []
-active_chats = {}   # {user_id1: user_id2, user_id2: user_id1}
-message_map = {}  # {sender_msg_id: receiver_msg_id}
-# Dictionary: {user_id: partner_id}
-
 
 @app.on_message(filters.command("start") & ~filters.me)
 async def start(client, message):
@@ -158,8 +154,14 @@ def helpcommand(client, message):
         startmsg,
         reply_markup=help_keyboard
     )
+#Admin Education
+@app.on_callback_query(filters.regex("^aded_"))
+async def admin_education1(client, callback_query):
+  await admin_education1(client, callback_query)
 
-
+@app.on_callback_query(filters.regex("^adm_education"))
+async def admin_education(client, callback_query):
+  await admin_edu(client, callback_query)
 @app.on_callback_query(filters.regex("delete"))
 async def delete(client, callback_query):
    await callback_query.message.delete()
@@ -285,10 +287,10 @@ Start sharing and start earning now! 🚀
       """,
       reply_markup=earnMoney12)
     elif query.data == "premium_apps":
-      user_status[user_id] = "search_premium_app"
-      msg = query.message.reply_text("Provide App Name..", reply_markup=cancelkro)
-      query.message.delete()
-      previous_messages[query.from_user.id] = msg.id  # 🔄 यहाँ `.message_id` की जगह `.id` करें
+      query.answer("Redirecting...")
+      keyboard = InlineKeyboardMarkup([
+       [InlineKeyboardButton("Open Premium Bot", url="https://t.me/apps_premiumBot?start=app")],[InlineKeyboardButton("🔙Back", callback_data="explore_more")]])
+      query.edit_message_text("Click below to get Premium Apps:", reply_markup=keyboard)
     elif query.data == "motivational_quota":
       query.message.edit_text("Getting Quota...")
       query.message.edit_text(get_quote(),reply_markup=InlineKeyboardMarkup([
