@@ -5,13 +5,11 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQ
 
 home_keyboard = InlineKeyboardMarkup([
         [InlineKeyboardButton("🤖 Our Telegram Bots", callback_data="our_telegram_bots1"),
-         InlineKeyboardButton("🌍 Our Website", url="https://mrsingodiya.ct.ws/")],
-        [InlineKeyboardButton("📢 Follow us on Social", callback_data="follow_us"),
-         InlineKeyboardButton("💬 Chat With Assistant", callback_data="chat_with_assistant")],
+        [InlineKeyboardButton("📢 Follow us", callback_data="follow_us"),
+         InlineKeyboardButton("💬 Chat Ai", callback_data="chat_with_assistant")],
          [InlineKeyboardButton("💰 Earn Money", callback_data="earn_money")],
-         [InlineKeyboardButton("Explore More", callback_data="explore_more")],
+         [InlineKeyboardButton("Advance Features", callback_data="explore_more")],
          [InlineKeyboardButton("🤖 Make Your Own Bot", callback_data="make_bot")],
-        [InlineKeyboardButton("❓ Get Help", callback_data="get_help"),
         InlineKeyboardButton("ℹ️ About Us", callback_data="about_us")]
          
     ])
@@ -54,8 +52,7 @@ contact_admin = InlineKeyboardMarkup([
         InlineKeyboardButton("🏠Home", callback_data="home")]
          ])
 getHelp = InlineKeyboardMarkup([
-        [InlineKeyboardButton("🌍 Our Website", url="https://mrsingodiya.blogspot.com/p/contact-us.html"),
-         InlineKeyboardButton("📞 Contact Admin", url="https://t.me/aks979")],
+         [InlineKeyboardButton("📞 Contact Owner", url="https://t.me/aks979")],
          [InlineKeyboardButton("🏠Home", callback_data="home")]
          ])
 chat_with_assistant = ReplyKeyboardMarkup(
@@ -110,44 +107,40 @@ aboutUs = InlineKeyboardMarkup([[InlineKeyboardButton("CLOSE 🔒", callback_dat
     
                      
 our_telegram_bots1 = InlineKeyboardMarkup([
-        [InlineKeyboardButton("AI IMAGE GENERATOR", callback_data="ai_image_generator"),
-         InlineKeyboardButton("AI ASSISTENT", callback_data="ai_assistent")],
-        [InlineKeyboardButton("AI MOVIE PROVIDER", callback_data="ai_movie_provider"),
-        InlineKeyboardButton("Movie PROVIDER", callback_data="movie_provider")],
-         [InlineKeyboardButton("UPSC HELPER", callback_data="upsc_helper"),
-         InlineKeyboardButton("💰 Earn Money", callback_data="earn_money_bot")],
+        [InlineKeyboardButton("AI IMAGE GENERATOR", callback_data="ai_image_generator")],
+         [InlineKeyboardButton("AI ASSISTENT", callback_data="ai_assistent")],
+        [InlineKeyboardButton("AI MOVIE PROVIDER", callback_data="ai_movie_provider")],
+         [InlineKeyboardButton("UPSC HELPER", callback_data="upsc_helper")],
         [InlineKeyboardButton("BACK", callback_data="home"),
         InlineKeyboardButton("NEXT⏭️", callback_data="our_telegram_bots2")]
     ])
 our_telegram_bots2 = InlineKeyboardMarkup([
-        [InlineKeyboardButton("SHARE LINK GENERATOR", callback_data="share_link_generator"),
-         InlineKeyboardButton("DICTIONARY", callback_data="dictionary_bot")],
-        [InlineKeyboardButton("BOARD CLASS RESULT", callback_data="board_class_result"),
-        InlineKeyboardButton("DOUBT SOLVER", callback_data="doubt_solver")],
-         [InlineKeyboardButton("UPSC HELPER", callback_data="upsc_helper"),
-         InlineKeyboardButton("E-PDF HUB", callback_data="e_pdf_hub")],
+        [InlineKeyboardButton("SHARE LINK GENERATOR", callback_data="share_link_generator")],
+         [InlineKeyboardButton("DICTIONARY", callback_data="dictionary_bot")],
+        [InlineKeyboardButton("BOARD CLASS RESULT", callback_data="board_class_result")],
+         [InlineKeyboardButton("UPSC HELPER", callback_data="upsc_helper")],
+         [InlineKeyboardButton("E-PDF HUB", callback_data="e_pdf_hub")],
         [InlineKeyboardButton("⏮️PREVIOUS", callback_data="our_telegram_bots1"),
         InlineKeyboardButton("Back", callback_data="home"),
         InlineKeyboardButton("NEXT⏭️", callback_data="our_telegram_bots3")]
     ])
 our_telegram_bots3 = InlineKeyboardMarkup([
-        [InlineKeyboardButton("E-PAPER", callback_data="our_telegram_bots3")],
         [InlineKeyboardButton("⏮️PREVIOUS", callback_data="our_telegram_bots2"),
         InlineKeyboardButton("Back", callback_data="home")]
     ])
 download_any_video = InlineKeyboardMarkup([
-        [InlineKeyboardButton("Let's Fun", callback_data="fun")],
+        [InlineKeyboardButton("🎮 Play Game ", callback_data="play_game")],
         [InlineKeyboardButton("️🔙Back", callback_data="explore_more"),
         InlineKeyboardButton("🏠Home", callback_data="home")]
     ])
 explore_more = InlineKeyboardMarkup([
-        [InlineKeyboardButton("Let's Fun", callback_data="fun"),
+        [InlineKeyboardButton("🎮 Games ", callback_data="play_game"),
         InlineKeyboardButton("Download Any Video", callback_data="download_any_video")],
         [InlineKeyboardButton("AI Image Editor", callback_data="ai_image_editor"),
          InlineKeyboardButton("EDUCATION", callback_data="education")],
          [InlineKeyboardButton("Motivational Quota", callback_data="motivational_quota"),
          InlineKeyboardButton("Anonymous Chat", callback_data="any_chat_start")],
-         [InlineKeyboardButton("Premium Apps", callback_data="premium_apps")],
+         [InlineKeyboardButton("Unlocked Apps", callback_data="premium_apps")],
         [InlineKeyboardButton("🔙Back", callback_data="home")]
     ])
 ai_image_editor = InlineKeyboardMarkup([
