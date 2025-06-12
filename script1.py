@@ -12,8 +12,17 @@ Innovation and optimization are at the core of my functionality, making tasks ea
 """
 startmsg = "Welcome To Singodiya Tech."
 admin_home_msg = "Hey Admin Please select a option below"
+close_for_bots1 = InlineKeyboardMarkup([
+        [InlineKeyboardButton("🔒 CLOSE", callback_data="our_telegram_bots1")]
+    ])
+close_for_bots2 = InlineKeyboardMarkup([
+        [InlineKeyboardButton("🔒 CLOSE", callback_data="ourclose_for_bots2")]
+    ])
+close_for_bots3 = InlineKeyboardMarkup([
+        [InlineKeyboardButton("🔒 CLOSE", callback_data="our_telegram_bots3")]
+    ])
 CALLBACK123 = {
-  "get_help": "Hello! Need assistance? We are here to help you with any queries related to our services.\n\nYou can get support for the following:\n\n- **AI Image Generator**: How to create stunning AI-generated images?\n- **AI Assistant**: How to use AI for answering queries and automating tasks?\n- **AI Movie Provider**: How to get AI-powered movie recommendations?\n- **Movie Provider**: How to access and explore different movies and web series?\n- **UPSC Helper**: How can this tool assist in your UPSC and other government exam preparations?\n- **Earn Money Bot**: What are the different ways to earn money online?\n\nIf you have any specific questions or need further details, feel free to reach out. Our team is always ready to assist you and ensure you get the best experience possible.\n\nSimply send us your query, and we will get back to you as soon as possible!",
+  "get_help": "Contect Admin to get help",
   "about_us":about_text,
   "contact_admin":"Please Select Contact Method.",
   "home":startmsg,
@@ -29,17 +38,17 @@ CALLBACK123 = {
   
   "follow_us":"Follow Us using Following Links",
   "follow_us2":"Follow Us using Following Links",
-  "our_telegram_bots1":"Here is My Telegram Bots.",
-  "our_telegram_bots2":"Here is My Telegram Bots. Part 2",
-  "our_telegram_bots3":"Here is My Telegram Bots. Last Part",
+  "our_telegram_bots1":"Welcome to **SingodiyaTech** Here is the More Telegram Bots for Free to use",
+  "our_telegram_bots2":"""
+  Welcome to **SingodiyaTech** Here is the More Telegram Bots for Free to use
+  """,
+  "our_telegram_bots3":"MORE **Bots** Comming Soon. Stay Connected...",
   "wrong_socialMedia":"Your Selected Social Media is Not Available This time. We don't have any account on this Social Media. Please Try Again after Few Days",
-  "ai_image_generator": "AI Image Generator एक स्मार्ट टूल है, जो आर्टिफिशियल इंटेलिजेंस की मदद से आपके बताए गए विवरण के आधार पर उच्च-गुणवत्ता वाली इमेज बनाता है। यह क्रिएटिव आर्टिस्ट, डिज़ाइनर और कंटेंट क्रिएटर्स के लिए एक उपयोगी टूल हो सकता है।",
+  "ai_image_generator": "[AI Image Generator](https://t.me/Image_generate1bot) एक स्मार्ट टूल है, जो आर्टिफिशियल इंटेलिजेंस की मदद से आपके बताए गए विवरण के आधार पर उच्च-गुणवत्ता वाली इमेज बनाता है। यह क्रिएटिव आर्टिस्ट, डिज़ाइनर और कंटेंट क्रिएटर्स के लिए एक उपयोगी टूल हो सकता है।\nhttps://t.me/Image_generate1bot\nhttps://t.me/Image_generate1bot ",
   
   "ai_assistent": "AI Assistant एक इंटेलिजेंट चैटबॉट है, जो आपके सवालों के जवाब देने, डेली टास्क में मदद करने और इंफॉर्मेशन प्रोवाइड करने के लिए डिज़ाइन किया गया है। यह आपको टेक्नोलॉजी, एजुकेशन, हेल्थ और अन्य विषयों पर सहायक जानकारी प्रदान कर सकता है।",
   
   "ai_movie_provider": "AI Movie Provider एक ऑटोमेटेड सर्विस है, जो आपको फिल्मों की सिफारिश देता है और आपकी पसंद के आधार पर मूवी सजेस्ट करता है। यह नए रिलीज़, ट्रेंडिंग फिल्में और आपके पसंदीदा जॉनर के आधार पर कस्टमाइज्ड मूवी सजेशन प्रदान करता है।",
-  
-  "movie_provider": "Movie Provider एक ऑनलाइन प्लेटफॉर्म है, जहां से आप अपनी पसंदीदा फिल्में और वेब सीरीज़ एक्सेस कर सकते हैं। यह विभिन्न कैटेगरी की मूवीज़ उपलब्ध कराता है और नए ट्रेंड्स के बारे में अपडेट देता है।",
   
   "upsc_helper": "UPSC Helper उन छात्रों के लिए डिज़ाइन किया गया है, जो UPSC और अन्य सरकारी परीक्षाओं की तैयारी कर रहे हैं। यह टूल महत्वपूर्ण अध्ययन सामग्ी, करंट अफेयर्स, नोट्स और प्रैक्टिस क्वेश्चन उपलब्ध कराता है, जिससे छात्रों को अपनी तैयारी में मदद मिलती है।",
   
@@ -65,6 +74,12 @@ ReplyMarkup123 = {
   "competition_exam":competition_exam,
   "available_boards" : available_boards,
   "term_and_conditions1":earn_term,
+  "ai_image_generator": close_for_bots1,
+  "ai_assistent": close_for_bots1,
+  "ai_movie_provider" : close_for_bots1,
+  "upsc_helper" : close_for_bots1,
+  "earn_money_bot": close_for_bots1
+  
   
   
   
