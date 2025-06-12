@@ -18,10 +18,11 @@ API_URL = "https://sainipankaj12.serv00.net/App/Pre/index.php"
 cancel12 = InlineKeyboardMarkup([
         [InlineKeyboardButton("🚫Cancel", callback_data="cancel")]])
 admin_keyboard  = InlineKeyboardMarkup([
-        [InlineKeyboardButton("Upload Premium App", callback_data="adm_upload_premium_app")],
+        [InlineKeyboardButton("Upload App", callback_data="adm_upload_premium_app")],
         [InlineKeyboardButton("BLOCK USER", callback_data="adm_block_user"),
         InlineKeyboardButton("Add Admin", callback_data="adm_add_admin")],
-        [InlineKeyboardButton("ADMINS", callback_data="adm_admins")],
+        [InlineKeyboardButton("Education", callback_data="adm_education"),
+        InlineKeyboardButton("ADMINS", callback_data="adm_admins")],
         [InlineKeyboardButton("⚜️Home", callback_data="home")]
     ])
 cancelkro = ReplyKeyboardMarkup(
@@ -138,43 +139,54 @@ def cancle_session_msg(client,message,user_status):
       time.sleep(0.7)
       msg12.delete()
 
-async def process_adm_text_messages(client,message,user_status,admin_app_details,admins):
-    user_id = message.from_user.id
-    user_text  = message.text
-    user_state = user_status.get(user_id)
-    real_msg = user_state.replace("adm_", "", 1) 
-    if real_msg =="upload_app_from_channel":
-      try:
-        chat = await client.get_chat(user_text)  # चैनल की जानकारी प्राप्त करें
+import re
 
-        await message.reply_text(f"""This Channel Details :
-📢 **{chat.title}**\n
-🆔 ID: `{chat.id}`\n
-👤 Members: {chat.members_count if chat.members_count else 'Unknown'}\n
-📜 Description: {chat.description if chat.description else 'No Description'}
+# Helper function to extract channel username and message ID from a Telegram link
+def extract_from_link(link):
+    match = re.match(r'https://t\.me/([\w\d_]+)/(\d+)', link)
+    if match:
+        return match.group(1), int(match.group(2))
+    return None, None
 
-Now Provide Me First Msg Id..
-        """)
-        user_status[user_id] = "adm_channel_first_id"
-        admin_app_details[user_id] = {}
-        admin_app_details[user_id]['channel_id'] = user_text
-      except Exception as e:
-        await message.reply_text("Failed to fetch channel details.")
-    elif real_msg == "channel_first_id":
-        if not user_text.isdigit():  # चेक करें कि सिर्फ नंबर हैं या नहीं
-            await message.reply_text("❌ Invalid Last ID! Please enter a numeric Channel ID.")
-        else:
-            admin_app_details[user_id]['first_id'] = int(user_text)  # नंबर को int में कन्वर्ट करें
-            await message.reply_text(f"Channel First  Message ID saved: {user_text} \n\n NOW PROVIDE LAST MSG ID..")
-            user_status[user_id] = "adm_channel_last_id"
+async def process_adm_text_messages(client, message, user_status, admin_app_details, admins):  
+    user_id = message.from_user.id  
+    user_text = message.text.strip()  
+    user_state = user_status.get(user_id)  
+    real_msg = user_state.replace("adm_", "", 1)
+
+    if real_msg == "upload_app_from_channel":  
+        username, msg_id = extract_from_link(user_text)
+        if not username or not msg_id:
+            await message.reply_text("❌ Invalid link! Please send a valid Telegram message link like:\n`https://t.me/channel/1234`")
+            return
+        try:  
+            chat = await client.get_chat(username)
+            await message.reply_text(f"""This Channel Details :  
+📢 **{chat.title}**  
+🆔 ID: `{chat.id}`  
+👤 Members: {chat.members_count if chat.members_count else 'Unknown'}  
+📜 Description: {chat.description if chat.description else 'No Description'}  
+  
+Now send me the **LAST message link**...  
+            """)  
+            user_status[user_id] = "adm_channel_last_id"  
+            admin_app_details[user_id] = {
+                'channel_id': chat.id,
+                'channel_username': username,
+                'first_id': msg_id
+            }
+        except Exception as e:  
+            await message.reply_text("Failed to fetch channel details.")
+  
     elif real_msg == "channel_last_id":
-        if not user_text.isdigit():  # चेक करें कि सिर्फ नंबर हैं या नहीं
-            await message.reply_text("❌ Invalid Last ID! Please enter a numeric Channel ID.")
-        else:
-            admin_app_details[user_id]['last_id'] = int(user_text)  # नंबर को int में कन्वर्ट करें
-            msg = await message.reply_text(f"Channel Last Message ID saved: {user_text} \n\n Now I AM SAVING FILES TO DATABASE..")
-            await fetch_and_save_files(client, user_id, message)  # Async function को कॉल करें
-            del user_status[user_id]
+        username, msg_id = extract_from_link(user_text)
+        if not username or not msg_id:
+            await message.reply_text("❌ Invalid link! Please send a valid Telegram message link like:\n`https://t.me/channel/5678`")
+            return
+        admin_app_details[user_id]['last_id'] = msg_id
+        await message.reply_text(f"✅ Last Message ID saved: {msg_id} \n\nNow saving files to database...")
+        await fetch_and_save_files(client, user_id, message)
+        del user_status[user_id]
 def process_adm_photo(client,message,user_status,admin_app_details, FILE_CHANNEL_ID):
       user_id = message.from_user.id
       user_state = user_status.get(user_id)
