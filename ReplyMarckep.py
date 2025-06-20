@@ -4,13 +4,13 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQ
 
 
 home_keyboard = InlineKeyboardMarkup([
-        [InlineKeyboardButton("🤖 Our Telegram Bots", callback_data="our_telegram_bots1"),
+        [InlineKeyboardButton("🤖 Our Telegram Bots", callback_data="our_telegram_bots1")],
         [InlineKeyboardButton("📢 Follow us", callback_data="follow_us"),
          InlineKeyboardButton("💬 Chat Ai", callback_data="chat_with_assistant")],
          [InlineKeyboardButton("💰 Earn Money", callback_data="earn_money")],
          [InlineKeyboardButton("Advance Features", callback_data="explore_more")],
          [InlineKeyboardButton("🤖 Make Your Own Bot", callback_data="make_bot")],
-        InlineKeyboardButton("ℹ️ About Us", callback_data="about_us")]
+        [InlineKeyboardButton("ℹ️ About Us", callback_data="about_us")]
          
     ])
 admin_home_keyboard = InlineKeyboardMarkup([
