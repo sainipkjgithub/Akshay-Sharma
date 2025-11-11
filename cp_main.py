@@ -376,13 +376,11 @@ async def start_course_fetch(course_id, org_id, txt_file=f"{BASE_PATH}/course_co
     await fetch_course_content(course_id, org_id, txt_file)
     print(f"\n✅ Finished! Saved in {txt_file}")
 
-@bot.on_message(filters.text)
+@bot.on_message(filters.text & filters.create(lambda _, __, msg: msg.chat.id in user_course_map))
 async def handle_course_selection(client, message):
     chat_id = message.chat.id
-    if chat_id not in user_course_map:
-        return  # No course map for this chat
-
     selected = message.text.strip()
+
     course_info = user_course_map[chat_id]
     course_map = course_info["course_map"]
     org_id = course_info["org_id"]
@@ -392,20 +390,20 @@ async def handle_course_selection(client, message):
         return
 
     course_id = course_map[selected]
-    await message.reply_text(f"⏳ Fetching content for selected course ...")
+    await message.reply_text("⏳ चयनित कोर्स का कंटेंट लाया जा रहा है...")
 
     txt_file = f"{BASE_PATH}/{course_id}.txt"
     if os.path.exists(txt_file):
         os.remove(txt_file)
 
-    # Fetch course content (async)
+    # Async content fetch
     await start_course_fetch(course_id, org_id, txt_file=txt_file)
 
-    # Send TXT file
+    # Send the fetched file
     await bot.send_document(chat_id=chat_id, document=txt_file)
     os.remove(txt_file)
 
-    # Remove chat from map
-    user_course_map.pop(chat_id)
+    # Cleanup
+    user_course_map.pop(chat_id, None)
 #print("🤖 Bot चालू हो गया...")
 #bot.run()
