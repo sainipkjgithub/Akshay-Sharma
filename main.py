@@ -21,7 +21,8 @@ import asyncio
 import threading
 import json
 flask_app = Flask(__name__)
-import cp-main
+import cp_main
+
 #InlineKeyboardMarkup([[InlineKeyboardButton("⚜Home", callback_data="home")]])
 @flask_app.route('/')
 def home():
