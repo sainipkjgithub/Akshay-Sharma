@@ -15,7 +15,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from script import bot, BASE_PATH
 import cp
 # ──────────────── /cp Command ────────────────
-@bot.on_message(filters.command("start") & filters.private)
+@bot.on_message(filters.command("cp_start") & filters.private)
 async def get_hash(_, message):
     await message.reply_text("I am alive\n/cp")
     
