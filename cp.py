@@ -555,11 +555,11 @@ async def create_html_from_txt(bot, message):
     # ⬇️ फाइल डाउनलोड करें
     status = await message.reply_text("⏳ फाइल डाउनलोड की जा रही है...")
     download_path = await bot.download_media(doc, file_name=f"{BASE_PATH}/tmp/{doc.file_name}")
-
+    output_path = download_path.replace(".txt", ".html")
     try:
         # 🔧 HTML जेनरेट करें
         await status.edit("⚙️ HTML जेनरेट हो रही है...")
-        output_path = generate_appx_html(download_path)
+        output_path = generate_appx_html(download_path, output_path)
 
         if output_path and os.path.exists(output_path):
             await status.edit("✅ HTML तैयार हो गया, भेजा जा रहा है...")
