@@ -4,6 +4,10 @@ from dotenv import load_dotenv
 from pyrogram import Client, filters
 import os
 load_dotenv()
+from pyromod import listen
+import requests, os
+
+BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 FILE_CHANNEL_ID = int(os.getenv("FILE_CHANNEL_ID"))
 API_ID = int(os.getenv("API_ID"))
 API_HASH = os.getenv("API_HASH")
