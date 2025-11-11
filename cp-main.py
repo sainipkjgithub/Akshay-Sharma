@@ -407,5 +407,5 @@ async def handle_course_selection(client, message):
 
     # Remove chat from map
     user_course_map.pop(chat_id)
-print("🤖 Bot चालू हो गया...")
-bot.run()
+#print("🤖 Bot चालू हो गया...")
+#bot.run()
