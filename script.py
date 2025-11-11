@@ -27,6 +27,7 @@ app = Client(
     api_hash=API_HASH,
     bot_token=BOT_TOKEN
 )
+bot = app
 
 def send_telegram_message(chat_id, text, bot_token):
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
